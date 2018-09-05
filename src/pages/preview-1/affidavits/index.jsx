@@ -36,8 +36,6 @@ class AffidavitsPage extends Component {
   constructor(...props) {
     super(...props);
 
-    console.log(this.props)
-
     this.state = {
       view: 'list',
       step: 1,
@@ -154,7 +152,7 @@ class AffidavitsPage extends Component {
 function DetermineStep({ active, deleteAffidavit, people, step, affidavits, setAffidavit, proceedStep, view, setView, addAffidavit, notification = { open: false }, sendEmail }) {
   const determineView = () => {
     switch (view) {
-      case 'list': return <List {...{ setView, addAffidavit, setAffidavit }} /> 
+      case 'list': return <List {...{ affidavits, people, setView, addAffidavit, setAffidavit }} /> 
       case 'overview': return <Overview {...{ deleteAffidavit, setView, sendEmail, affidavits, active, people }} /> 
       case 'personal': return <Personal {...{ setView }} /> 
       case 'occupants': return <Occupants {...{ setView }} /> 
@@ -171,7 +169,7 @@ function DetermineStep({ active, deleteAffidavit, people, step, affidavits, setA
 }
 
 
-function List({ setView, addAffidavit, setAffidavit }) {
+function List({ setView, affidavits, people, addAffidavit, setAffidavit }) {
   const goToOverview = (id) => {
     setAffidavit(id);
     setView('overview')
@@ -187,11 +185,13 @@ function List({ setView, addAffidavit, setAffidavit }) {
       <Header text="Your Affidavits" backLink="/" />
       <div style={{ display: 'flex', flexDirection: 'column', flexGrow: 1, padding: '2rem' }}>
         <div style={{ margin: '0.5rem 0', flexGrow: 1 }}>
-          <AffidavitsList itemClickCallback={goToOverview} />
+          <AffidavitsList affidavits={affidavits} people={people} itemClickCallback={goToOverview} />
         </div>
-        <Button variant="contained" color="primary" onClick={addAffidavitWrapper}>
-          Create a new Affidavit
-        </Button>
+        <div style={{ maxWidth: '400px' }}>
+          <Button variant="contained" color="primary" onClick={addAffidavitWrapper}>
+            Create a new Affidavit
+          </Button>
+        </div>
       </div>
     </div>
   );

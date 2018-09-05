@@ -27,7 +27,6 @@ function Modal({ open, title, close, approve, reject, content }) {
   }
 
   const buildApprove = () => {
-    console.log(approve, approve.click, typeof approve.click)
     if (typeof approve.click === 'function') {
       return (
         <Button onClick={approve.click} color="primary" autoFocus>

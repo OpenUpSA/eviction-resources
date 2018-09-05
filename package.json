@@ -14,6 +14,7 @@
     "redux-batched-actions": "^0.4.0",
     "redux-batched-subscribe": "^0.1.6",
     "redux-devtools-extension": "^2.13.5",
+    "redux-localstorage": "^0.4.1",
     "redux-thunk": "^2.3.0",
     "uuid": "^3.3.2"
   },
@@ -23,6 +24,8 @@
     "start": "gatsby develop"
   },
   "devDependencies": {
+    "gatsby-plugin-manifest": "^1.0.27",
+    "gatsby-plugin-offline": "^1.0.18",
     "gatsby-plugin-react-next": "^1.0.11"
   },
   "repository": {

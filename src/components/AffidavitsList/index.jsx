@@ -26,7 +26,7 @@ function AffidavitsList({ affidavits, people, itemClickCallback }) {
           const { firstName, lastName } = people[affidavits[key].representative];
           const hasFirstAndLastNames = firstName && lastName;
           const displayName = hasFirstAndLastNames ? `${firstName} ${lastName}` : 'Unknown Person'
-          const occupants = Object.keys(people).length;
+          const occupants = Object.keys(affidavits[key].people).length;
           const date = new Date(affidavits[key].created);
 
           return (
@@ -40,17 +40,4 @@ function AffidavitsList({ affidavits, people, itemClickCallback }) {
   )
 }
 
-
-const mapStateToProps = (state, ownProps) => ({
-  ...ownProps,
-  affidavits: state.affidavits,
-  people: state.people,
-});
-
-
-const mapDispatchToProps = (dispatch, ownProps) => ({
-  ...ownProps,
-});
-
-
-export default connect(mapStateToProps, mapDispatchToProps)(AffidavitsList);
+export default AffidavitsList;
