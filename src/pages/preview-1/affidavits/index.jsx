@@ -7,11 +7,36 @@ import Typography from '@material-ui/core/Typography';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Modal from './../../../components/Modal';
 import DialogContentText from '@material-ui/core/DialogContentText';
+import { addAffidavit as addAffidavitAction } from './../../../redux/actions';
+import { setActiveAffidavit } from './../../../redux/modules/active';
+import { destroyAffidavit } from './../../../redux/modules/affidavits';
+import AffidavitPreview from './../../../components/AffidavitPreview';
+import { mean } from 'lodash';
+
+
+function determinePercentageCompleted(object) {
+  const completed = Object.keys(object).reduce(
+    (result, key) => {
+      if (object[key] === '' || object[key] === null) {
+        return result;
+      }
+      
+      return result + 1;
+    },
+    0
+  )
+
+  const length = Object.keys(object).length;
+  return Math.floor((completed / length) * 100);
+}
+
 
 
 class AffidavitsPage extends Component {
   constructor(...props) {
     super(...props);
+
+    console.log(this.props)
 
     this.state = {
       view: 'list',
@@ -23,11 +48,11 @@ class AffidavitsPage extends Component {
       proceedStep: this.proceedStep.bind(this),
       setView: this.setView.bind(this),
       sendEmail: this.sendEmail.bind(this),
+      deleteAffidavit: this.deleteAffidavit.bind(this),
     }
   }
 
   sendEmail() {
-    console.log('asdsa')
     return this.setState({ 
       notification: {
         title: 'Missing content',
@@ -45,6 +70,57 @@ class AffidavitsPage extends Component {
         approve: {
           text: 'Send',
           click: 'mailto:shaun@nu.org.za'
+        }
+      }
+    })
+  }
+
+  deleteAffidavit(id) {
+    const goToOverview = () => {
+      this.props.setAffidavit(id);
+      this.setState({ view: 'overview' });
+      this.setState({ notification: null })
+    }
+
+    const affidavit = this.props.affidavits[id]
+    const array = affidavit.people.map(id => determinePercentageCompleted(this.props.people[id]))
+    const completedAverage = mean(array);
+    const date = new Date(affidavit.created);
+    const occupants = Object.keys(affidavit.people).length;
+    const { firstName, lastName } = this.props.people[affidavit.representative];
+    const hasFirstAndLastNames = firstName && lastName;
+    const displayName = hasFirstAndLastNames ? `${firstName} ${lastName}` : 'Unknown Person'
+
+    const deleteItem = () => {
+      this.props.deleteAffidavit(id);
+      this.setState({ 
+        view: 'list',
+        notification: null,
+      })
+    }
+
+    return this.setState({ 
+      notification: {
+        title: 'Confirm deletion',
+        content: (
+          <div>
+            <DialogContentText>
+              You are about to delete the following affidavit. Please confirm that this is what you want to do. Once delete it can not be recovered.
+            </DialogContentText>
+            <div style={{ marginTop: '20px' }} onClick={goToOverview}>
+              <AffidavitPreview completed={completedAverage} name={displayName} occupants={occupants} date={date} />
+            </div>
+          </div>
+        ),
+        open: true,
+        close: () => this.setState({ notification: null }),
+        reject: {
+          text: 'Cancel',
+          click: () => this.setState({ notification: null })
+        },
+        approve: {
+          text: 'Delete',
+          click: deleteItem,
         }
       }
     })
@@ -68,17 +144,18 @@ class AffidavitsPage extends Component {
 
   render() {
     const { step, view, notification } = this.state;
-    const { proceedStep, setView, sendEmail } = this.events;
-    return <DetermineStep {...{ step, proceedStep, view, setView, notification, sendEmail }} />
+    const { proceedStep, setView, sendEmail, deleteAffidavit } = this.events;
+    const { addAffidavit, setAffidavit, affidavits, active, people } = this.props;
+    return <DetermineStep {...{ deleteAffidavit, people, step, active, affidavits, proceedStep, view, setView, notification, sendEmail, addAffidavit, setAffidavit }} />
   }
 }
 
 
-function DetermineStep({ step, proceedStep, view, setView, notification = { open: false }, sendEmail }) {
+function DetermineStep({ active, deleteAffidavit, people, step, affidavits, setAffidavit, proceedStep, view, setView, addAffidavit, notification = { open: false }, sendEmail }) {
   const determineView = () => {
     switch (view) {
-      case 'list': return <List {...{ setView }} /> 
-      case 'overview': return <Overview {...{ setView, sendEmail }} /> 
+      case 'list': return <List {...{ setView, addAffidavit, setAffidavit }} /> 
+      case 'overview': return <Overview {...{ deleteAffidavit, setView, sendEmail, affidavits, active, people }} /> 
       case 'personal': return <Personal {...{ setView }} /> 
       case 'occupants': return <Occupants {...{ setView }} /> 
       default: return <List {...{ setView }} /> 
@@ -94,18 +171,25 @@ function DetermineStep({ step, proceedStep, view, setView, notification = { open
 }
 
 
-function List({ setView }) {
+function List({ setView, addAffidavit, setAffidavit }) {
+  const goToOverview = (id) => {
+    setAffidavit(id);
+    setView('overview')
+  }
+
+  const addAffidavitWrapper = () => {
+    const id = addAffidavit();
+    goToOverview(id);
+  }
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <Header text="Your Affidavits" backLink="/" />
       <div style={{ display: 'flex', flexDirection: 'column', flexGrow: 1, padding: '2rem' }}>
-        <Typography component="p">
-          Most recent affidavits:
-        </Typography>
         <div style={{ margin: '0.5rem 0', flexGrow: 1 }}>
-          <AffidavitsList />
+          <AffidavitsList itemClickCallback={goToOverview} />
         </div>
-        <Button variant="contained" color="primary" onClick={() => setView('overview')}>
+        <Button variant="contained" color="primary" onClick={addAffidavitWrapper}>
           Create a new Affidavit
         </Button>
       </div>
@@ -114,15 +198,18 @@ function List({ setView }) {
 }
 
 
-function Overview({ setView, sendEmail }) {
+function Overview({ setView, sendEmail, affidavits, active, people, deleteAffidavit }) {
+  const array = affidavits[active.affidavit].people.map(id => determinePercentageCompleted(people[id]))
+  const completedAverage = mean(array);
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <Header text="Affidavit Overview" backClick={() => setView('list')} />
       <div style={{ display: 'flex', flexDirection: 'column', flexGrow: 1, padding: '2rem' }}>
         <div style={{ margin: '0.5rem 0 1.5rem 0' }}>
-          <LinearProgress variant="determinate" value={15} />
+          <LinearProgress variant="determinate" value={completedAverage} />
           <Typography component="p">
-            15% Total Completed
+            {completedAverage}% Total Completed
           </Typography>
         </div>
         <Typography component="p">
@@ -130,14 +217,20 @@ function Overview({ setView, sendEmail }) {
         </Typography>
 
         <div style={{ margin: '2rem 0 0.5rem 0' }}>
-          <Button variant="contained" onClick={() => setView('personal')}>
+          <Button variant="raised" onClick={() => setView('personal')}>
             Your Information (0%)
           </Button>
         </div>
 
         <div style={{ margin: '0.5rem 0 2rem' }}>
-          <Button variant="contained" onClick={() => setView('occupants')}>
+          <Button variant="raised" onClick={() => setView('occupants')}>
             Occupant Information (0%)
+          </Button>
+        </div>
+
+        <div style={{ margin: '0.5rem 0' }}>
+          <Button variant="flat" color="secondary" onClick={() => deleteAffidavit(active.affidavit)}>
+            Delete Affidavit
           </Button>
         </div>
 
@@ -184,11 +277,15 @@ const mapStateToProps = (state, ownProps) => ({
   ...ownProps,
   affidavits: state.affidavits,
   people: state.people,
+  active: state.active,
 });
 
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
   ...ownProps,
+  addAffidavit: () => dispatch(addAffidavitAction()),
+  setAffidavit: id => dispatch(setActiveAffidavit(id)),
+  deleteAffidavit: id => dispatch(destroyAffidavit(id)),
 });
 
 

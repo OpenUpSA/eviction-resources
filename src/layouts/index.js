@@ -15,7 +15,7 @@ const Layout = ({ children, data }) => (
     />
     
     <CssBaseline>
-      <div style={{ maxWidth: '320px', margin: '0 auto'}}>
+      <div style={{ maxWidth: '320px', margin: '0 auto', border: '1px solid #DDD'}}>
         {children()}
       </div>
     </CssBaseline>

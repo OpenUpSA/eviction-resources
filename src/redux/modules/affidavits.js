@@ -37,6 +37,7 @@ export default function reducer(state = {}, action = {}) {
       [action.payload]: {
         representative: null,
         people: [],
+        created: new Date().getTime(),
       },
     };
 
@@ -45,7 +46,7 @@ export default function reducer(state = {}, action = {}) {
 }
 
 
-export function deleteAffidavitWithId(id) {
+export function destroyAffidavit(id) {
   return {
     type: DELETE,
     payload: id,

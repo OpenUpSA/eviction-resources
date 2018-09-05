@@ -21,7 +21,7 @@ function AffidavitPreview({ classes, name, occupants, date, completed = 0 }) {
             {name}
           </Typography>
           <Typography component="p">
-            Total of {occupants} occupants
+            Total of {occupants} occupant{occupants > 1 && 's'}
           </Typography>
           <Typography component="p">
             {completed}% completed

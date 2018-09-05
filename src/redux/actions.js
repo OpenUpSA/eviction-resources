@@ -14,8 +14,9 @@ export function addAffidavit() {
       createPerson(personId),
       linkPersonToAffidavit(affidavitId, personId),
       setAffidavitRepresentative(affidavitId, personId),
-      setActiveAffidavit(affidavitId),
     ].forEach(action => dispatch(action))
+
+    return affidavitId;
   }
 }
 
