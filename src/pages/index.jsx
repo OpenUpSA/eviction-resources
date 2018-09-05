@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import Link from 'gatsby-link'
+import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Header from '../components/Header';
 
@@ -50,6 +51,23 @@ function Markup({ loading, setLoading }) {
             )
           })
         }
+      </div>
+
+      <div style={{ padding: '2rem 2rem 6rem' }}>
+          <hr />
+          <div style={{ marginBottom: '2rem' }}>
+          <Typography component="p">
+            <strong>DANGER</strong>: The button below will delete all your saved information. 
+          </Typography>
+          <br></br>
+          <Typography component="p">
+            Due to the the fact that this app is still in early alpha stage there might be bugs that break the existing stored data, whereby the only way to restore the app to working state is to clear all saved data.
+          </Typography>
+          </div>
+        <Button variant="flat" color="secondary" onClick={() => console.log('ss')}>
+          Delete all saved information
+        </Button>
+        <hr />
       </div>
     </div>
   )
