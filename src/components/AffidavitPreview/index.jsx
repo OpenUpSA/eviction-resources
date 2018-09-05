@@ -5,7 +5,7 @@ import CardActionArea from '@material-ui/core/CardActionArea';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
-
+import LinearProgress from '@material-ui/core/LinearProgress';
 
 const monthNames = ["January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"
@@ -26,6 +26,7 @@ function AffidavitPreview({ classes, name, occupants, date, completed = 0 }) {
           <Typography component="p">
             {completed}% completed
           </Typography>
+          <LinearProgress variant="determinate" value={completed} />
           <Typography component="p">
             Created on {date.getDate()} {monthNames[date.getMonth()]} {date.getFullYear()}
           </Typography>
