@@ -1,7 +1,18 @@
 import uuid from 'uuid/v4';
-import { setActiveAffidavit } from './modules/active';
 import { createAffidavit, linkPersonToAffidavit, setAffidavitRepresentative } from './modules/affidavits';
-import { createPerson } from './modules/people';
+import { createPerson, changePersonAttribute } from './modules/people';
+
+
+export function setRepresentative(affidavitId, personId) {
+  return (dispatch) => {
+    [
+      setAffidavitRepresentative(affidavitId, personId),
+      changePersonAttribute(personId, 'relationship', 'N/A'),
+    ].forEach(action => dispatch(action))
+
+    return affidavitId;
+  }
+}
 
 
 export function addAffidavit() {
@@ -13,14 +24,12 @@ export function addAffidavit() {
       createAffidavit(affidavitId),
       createPerson(personId),
       linkPersonToAffidavit(affidavitId, personId),
-      setAffidavitRepresentative(affidavitId, personId),
+      setRepresentative(affidavitId, personId),
     ].forEach(action => dispatch(action))
 
     return affidavitId;
   }
 }
-
-
 
 
 

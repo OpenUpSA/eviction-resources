@@ -8,16 +8,38 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import Modal from './../../../components/Modal';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import { addAffidavit as addAffidavitAction } from './../../../redux/actions';
-import { setActiveAffidavit } from './../../../redux/modules/active';
+import { setActiveAffidavit, setActivePerson } from './../../../redux/modules/active';
 import { destroyAffidavit } from './../../../redux/modules/affidavits';
 import AffidavitPreview from './../../../components/AffidavitPreview';
 import { mean } from 'lodash';
-
+import TextField from '@material-ui/core/TextField';
+import MobileStepper from '@material-ui/core/MobileStepper';
+import { changePersonAttribute } from './../../../redux/modules/people';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
+import Card from '@material-ui/core/Card';
+import questions from './questions.json';
+import { withStyles } from '@material-ui/core/styles';
+import CardActionArea from '@material-ui/core/CardActionArea';
+import CardContent from '@material-ui/core/CardContent';
+import Chip from '@material-ui/core/Chip';
 
 function determinePercentageCompleted(object) {
   const completed = Object.keys(object).reduce(
     (result, key) => {
-      if (object[key] === '' || object[key] === null) {
+      if (
+        (
+          typeof object[key] === 'string' &&
+          object[key] === ''
+        ) ||
+        (
+          Array.isArray(object[key]) &&
+          object[key].length < 1
+        )
+      ) {
         return result;
       }
       
@@ -30,6 +52,13 @@ function determinePercentageCompleted(object) {
   return Math.floor((completed / length) * 100);
 }
 
+function calcEntireAverageCompleted(affidavitId, affidavits, people) {
+  const affidavit = affidavits[affidavitId]
+  const array = affidavit.people.map(id => determinePercentageCompleted(people[id]))
+  const meanResult = mean(array);
+  return affidavit.people.length === 1 ? Math.floor(meanResult / 3) : meanResult;
+}
+
 
 
 class AffidavitsPage extends Component {
@@ -38,7 +67,7 @@ class AffidavitsPage extends Component {
 
     this.state = {
       view: 'list',
-      step: 1,
+      step: 0,
       notification: null,
     }
 
@@ -80,12 +109,11 @@ class AffidavitsPage extends Component {
       this.setState({ notification: null })
     }
 
-    const affidavit = this.props.affidavits[id]
-    const array = affidavit.people.map(id => determinePercentageCompleted(this.props.people[id]))
-    const completedAverage = mean(array);
-    const date = new Date(affidavit.created);
-    const occupants = Object.keys(affidavit.people).length;
-    const { firstName, lastName } = this.props.people[affidavit.representative];
+    const completedAverage = calcEntireAverageCompleted(id, this.props.affidavits, this.props.people)
+    const aff = this.props.affidavits[id];
+    const date = new Date(aff.created);
+    const occupants = Object.keys(aff.people).length;
+    const { firstName, lastName } = this.props.people[aff.representative];
     const hasFirstAndLastNames = firstName && lastName;
     const displayName = hasFirstAndLastNames ? `${firstName} ${lastName}` : 'Unknown Person'
 
@@ -131,31 +159,30 @@ class AffidavitsPage extends Component {
 
 
   proceedStep(id) {
-    if (id === true) {
-      return this.setState({ step: this.state.step + 1 })
-    }
-    
     if (id === false) {
       return this.setState({ step: this.state.step - 1 })
     }
+
+    return this.setState({ step: this.state.step + 1 })
   }
 
   render() {
     const { step, view, notification } = this.state;
     const { proceedStep, setView, sendEmail, deleteAffidavit } = this.events;
-    const { addAffidavit, setAffidavit, affidavits, active, people } = this.props;
-    return <DetermineStep {...{ deleteAffidavit, people, step, active, affidavits, proceedStep, view, setView, notification, sendEmail, addAffidavit, setAffidavit }} />
+    const { changeAttribute, addAffidavit, setAffidavit, affidavits, active, people, setPerson } = this.props;
+    
+    return <DetermineStep {...{ changeAttribute, deleteAffidavit, setPerson, people, step, active, affidavits, proceedStep, view, setView, notification, sendEmail, addAffidavit, setAffidavit }} />
   }
 }
 
 
-function DetermineStep({ active, deleteAffidavit, people, step, affidavits, setAffidavit, proceedStep, view, setView, addAffidavit, notification = { open: false }, sendEmail }) {
+function DetermineStep({ changeAttribute, active, deleteAffidavit, people, step, affidavits, setAffidavit, proceedStep, setPerson, view, setView, addAffidavit, notification = { open: false }, sendEmail }) {
   const determineView = () => {
     switch (view) {
       case 'list': return <List {...{ affidavits, people, setView, addAffidavit, setAffidavit }} /> 
-      case 'overview': return <Overview {...{ deleteAffidavit, setView, sendEmail, affidavits, active, people }} /> 
-      case 'personal': return <Personal {...{ setView }} /> 
-      case 'occupants': return <Occupants {...{ setView }} /> 
+      case 'overview': return <Overview {...{ deleteAffidavit, setView, sendEmail, affidavits, active, people, setPerson }} /> 
+      case 'personal': return <Personal {...{ changeAttribute, setView, people, active, step, proceedStep }} /> 
+      case 'occupants': return <Occupants {...{ changeAttribute, setView, step, proceedStep, people, active, affidavits }} /> 
       default: return <List {...{ setView }} /> 
     }
   }
@@ -172,7 +199,7 @@ function DetermineStep({ active, deleteAffidavit, people, step, affidavits, setA
 function List({ setView, affidavits, people, addAffidavit, setAffidavit }) {
   const goToOverview = (id) => {
     setAffidavit(id);
-    setView('overview')
+    setView('overview');
   }
 
   const addAffidavitWrapper = () => {
@@ -183,29 +210,32 @@ function List({ setView, affidavits, people, addAffidavit, setAffidavit }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <Header text="Your Affidavits" backLink="/" />
-      <div style={{ display: 'flex', flexDirection: 'column', flexGrow: 1, padding: '2rem' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', flexGrow: 1, padding: '2rem 2rem 0' }}>
         <div style={{ margin: '0.5rem 0', flexGrow: 1 }}>
           <AffidavitsList affidavits={affidavits} people={people} itemClickCallback={goToOverview} />
         </div>
-        <div style={{ maxWidth: '400px' }}>
-          <Button variant="contained" color="primary" onClick={addAffidavitWrapper}>
-            Create a new Affidavit
-          </Button>
-        </div>
+      </div>
+      <div style={{ maxWidth: '400px', padding: '2rem 2rem 6rem' }}>
+        <Button variant="contained" color="primary" onClick={addAffidavitWrapper}>
+          Create a new Affidavit
+        </Button>
       </div>
     </div>
   );
 }
 
 
-function Overview({ setView, sendEmail, affidavits, active, people, deleteAffidavit }) {
-  const array = affidavits[active.affidavit].people.map(id => determinePercentageCompleted(people[id]))
-  const completedAverage = mean(array);
+function Overview({ setView, sendEmail, affidavits, active, people, deleteAffidavit, proceedStep, setPerson }) {
+  const completedAverage = calcEntireAverageCompleted(active.affidavit, affidavits, people)
+  const personalClickWrapper = () => {
+    setPerson(affidavits[active.affidavit].representative);
+    setView('personal');
+  }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <Header text="Affidavit Overview" backClick={() => setView('list')} />
-      <div style={{ display: 'flex', flexDirection: 'column', flexGrow: 1, padding: '2rem' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', flexGrow: 1, padding: '2rem 2rem 0' }}>
         <div style={{ margin: '0.5rem 0 1.5rem 0' }}>
           <LinearProgress variant="determinate" value={completedAverage} />
           <Typography component="p">
@@ -217,17 +247,18 @@ function Overview({ setView, sendEmail, affidavits, active, people, deleteAffida
         </Typography>
 
         <div style={{ margin: '2rem 0 0.5rem 0' }}>
-          <Button variant="raised" onClick={() => setView('personal')}>
+          <Button variant="raised" onClick={personalClickWrapper}>
             Your Information (0%)
           </Button>
         </div>
 
-        <div style={{ margin: '0.5rem 0 2rem' }}>
+        <div style={{ margin: '0.5rem 0' }}>
           <Button variant="raised" onClick={() => setView('occupants')}>
-            Occupant Information (0%)
+            Occupants Information (0%)
           </Button>
         </div>
-
+      </div>
+      <div style={{ padding: '2rem 2rem 6rem' }}>
         <div style={{ margin: '0.5rem 0' }}>
           <Button variant="flat" color="secondary" onClick={() => deleteAffidavit(active.affidavit)}>
             Delete Affidavit
@@ -244,29 +275,255 @@ function Overview({ setView, sendEmail, affidavits, active, people, deleteAffida
   );
 }
 
+function Personal({ setView, people, active, step, proceedStep, changeAttribute }) {
+  const { basic, language, citizenship, health, employment } = questions;
 
-function Personal({ setView }) {
+  const fullSteps = [
+    basic,
+    language,
+    citizenship,
+    health,
+    employment,
+  ]
+
+  const minSteps = [
+    basic,
+    citizenship,
+    health,
+  ]
+
+  const steps = fullSteps;
+
+  const buildView = (array) => {
+    return array.questions.map(({ options, label, value, condition, type }) => {
+      const personAttributes = people[active.person];
+
+      const shouldShow = (key, innerValue, callback) => {
+        if (personAttributes[key] === innerValue) {
+          return callback;
+        }
+
+        if (personAttributes[value] === '') {
+          changeAttribute(active.person, value, 'N/A')
+        }
+
+        return null;
+      }
+
+      const buildItem = () => {
+        if (type === 'list') {
+          const output = (
+            <div key={value} style={{ marginTop: '1.2rem' }}>
+              <div>asdasd</div>
+            </div>
+          )
+
+          if (condition) {
+            return shouldShow(condition.key, condition.value, output);
+          }
+
+          return output;
+
+        }
+
+        if (options) {
+          const output = (
+            <div key={value} style={{ marginTop: '1.2rem' }}>
+              <FormControl fullWidth>
+                <InputLabel htmlFor={value}>{label}</InputLabel>
+                <Select
+                  value={personAttributes[value]}
+                  onChange={event => changeAttribute(active.person, value, event.target.value)}
+                  input={<Input name={value} id={value} />}
+                >
+                  {
+                    options.map(value => <MenuItem key={value} value={value}>{value}</MenuItem>)
+                  }
+                </Select>
+              </FormControl>
+            </div>
+          )
+
+          if (condition) {
+            return shouldShow(condition.key, condition.value, output);
+          }
+
+          return output;
+        }
+  
+        
+        const output = (
+          <FormControl fullWidth key={value}>
+            <TextField
+              type={type || 'string'}
+              id={value}
+              label={label}
+              value={personAttributes[value]}
+              onChange={event => changeAttribute(active.person, value, event.target.value)}
+              margin="normal"
+            />
+          </FormControl>
+        )
+
+        if (condition) {
+          return shouldShow(condition.key, condition.value, output);
+        }
+
+        return output;
+      }
+
+      return buildItem();
+    })
+  }
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      <Header text="Your Info" backClick={() => setView('list')} />
+      <Header text="Your Info" backClick={() => setView('overview')} />
       <div style={{ display: 'flex', flexDirection: 'column', flexGrow: 1, padding: '2rem' }}>
         <Typography component="p">
-          Step 1/10
+          Step {step + 1}/{steps.length}
         </Typography>
+        <MobileStepper
+          variant="dots"
+          steps={steps.length}
+          position="static"
+          activeStep={step}
+        />
+
+        <Typography variant="display1">
+          {steps[step].title}
+        </Typography>
+
+        <form noValidate autoComplete="off">
+          {buildView(steps[step])}
+        </form>
+      </div>
+      <div style={{ padding: '2rem 2rem 6rem' }}>
+        {
+          step > 0 && (
+            <Button variant="flat" color="primary" onClick={() => proceedStep(false)}>
+              Previous Step
+            </Button>
+          )
+        }
+
+        {
+          step < steps.length - 1 && (
+            <Button variant="contained" color="primary" onClick={() => proceedStep()}>
+              Next Step
+            </Button>
+          )
+        }
+
+        {
+          step === steps.length - 1 && (
+            <Button variant="contained" color="primary" onClick={() => setView('overview')}>
+              Return
+            </Button>
+          )
+        }
       </div>
     </div>
   );
 }
 
 
-function Occupants({ setView }) {
+function RawPersonPreview({ classes, name, representative }) {
+  if (representative) {
+    return (
+      <Card>
+        <CardContent>
+          <FormControl disabled fullWidth >
+            <InputLabel htmlFor="firstName">First Name</InputLabel>
+            <Input id="firstName" value="Schalk" />
+          </FormControl>
+        </CardContent>
+        <CardContent>
+          <FormControl disabled fullWidth >
+            <InputLabel htmlFor="lastName">Last Name</InputLabel>
+            <Input id="lastName" value="Venter" />
+          </FormControl>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  return (
+    <Card>
+      <CardContent>
+        <FormControl fullWidth >
+          <InputLabel htmlFor="firstName-1">First Name</InputLabel>
+          <Input id="firstName-1" value="" />
+        </FormControl>
+      </CardContent>
+      <CardContent>
+        <FormControl fullWidth >
+          <InputLabel htmlFor="lastName-1">Last Name</InputLabel>
+          <Input id="lastName-1" value="" />
+        </FormControl>
+      </CardContent>
+      <CardContent>
+      <FormControl fullWidth>
+        <InputLabel htmlFor="relationship-1">Relationship to you</InputLabel>
+        <Select
+          value=""
+          input={<Input name="relationship-1" id="relationship-1" />}
+        >
+          {
+            ['Spouse', 'Friend/Housemate', 'Child', 'Parent', 'Grandparent', 'Grandchild'].map(value => <MenuItem key={value} value={value}>{value}</MenuItem>)
+          }
+        </Select>
+      </FormControl>
+      </CardContent>
+    </Card>
+  )
+}
+
+const PersonPreview = withStyles({ button: { width: '100%' }})(RawPersonPreview)
+
+function Occupants({ setView, people, active, affidavits }) {
+  const peopleList = affidavits[active.affidavit].people;
+  console.log(peopleList.length - 1)
+
+
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      <Header text="Occupant Info" backClick={() => setView('list')} />
+      <Header text="Occupant Info" backClick={() => setView('overview')} />
       <div style={{ display: 'flex', flexDirection: 'column', flexGrow: 1, padding: '2rem' }}>
         <Typography component="p">
-          Step 1/10
+          Step 1/{((peopleList.length - 1) * 3) + 1}
         </Typography>
+        <MobileStepper
+          variant="dots"
+          steps={((peopleList.length - 1) * 3) + 1}
+          position="static"
+          activeStep={0}
+        />
+
+        <Typography variant="display1">
+          Tell us about the other occupants of the household?
+        </Typography>
+
+        <PersonPreview representative />
+        <div style={{ marginTop: '1rem' }}>
+          <PersonPreview />
+        </div>
+
+        <br />
+        <div style={{ margin: '0.5rem 0' }}>
+          <Button variant="raised" onClick={() => () => console.log('asdasd')}>
+            Add another occupant
+          </Button>
+        </div>
+      </div>
+
+      <div style={{ padding: '2rem 2rem 6rem' }}>
+        <div style={{ margin: '0.5rem 0' }}>
+          <Button variant="contained"  color="primary" onClick={(() => console.log('asdasd'))}>
+            Proceed next step
+          </Button>
+        </div>
       </div>
     </div>
   );
@@ -286,6 +543,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   addAffidavit: () => dispatch(addAffidavitAction()),
   setAffidavit: id => dispatch(setActiveAffidavit(id)),
   deleteAffidavit: id => dispatch(destroyAffidavit(id)),
+  setPerson: id => dispatch(setActivePerson(id)),
+  changeAttribute: (id, attribute, value) => dispatch(changePersonAttribute(id, attribute, value)),
 });
 
 

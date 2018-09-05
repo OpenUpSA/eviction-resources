@@ -1,0 +1,120 @@
+{
+  "basic": {
+    "title": "Tell us about yourself?",
+    "questions": [
+      {
+        "label": "First Name",
+        "value": "firstName"
+      }, 
+      {
+        "label": "Last Name",
+        "value": "lastName"
+      }, 
+      {
+        "type": "number",
+        "label": "Age",
+        "value": "age"
+      },
+      {
+        "label": "Gender",
+        "value": "gender",
+        "options": ["Male", "Female", "Other"]
+      }
+    ]
+  },
+  "language": {
+    "title": "How well do you understand English?",
+    "questions": [
+      {
+        "label": "Speaking",
+        "value": "englishSpeaking",
+        "options": ["Excellent", "Good", "Weak"]
+      }, 
+      {
+        "label": "Reading",
+        "value": "englishReading",
+        "options": ["Excellent", "Good", "Weak"]
+      }, 
+      {
+        "label": "Writing",
+        "value": "englishWriting",
+        "options": ["Excellent", "Good", "Weak"]
+      },
+      {
+        "label": "Home language",
+        "value": "homeLanguage",
+        "options": ["Afrikaans", "Southern Sotho", "Tsonga", "English", "Tswana", "Swati", "Zulu", "Northern Sotho", "Ndebele", "Xhosa", "Venda"]
+      }
+    ]
+  },
+  "citizenship": {
+    "title": "Are you a South African citizen?",
+    "questions": [
+      {
+        "value": "citizenship",
+        "options": ["No", "Yes"]
+      },
+      {
+        "label": "What is your legal residency status?",
+        "value": "otherCitizenship",
+        "options": ["Permanent Residence", "Refugee Status", "Asylum Seeker"],
+        "condition": {
+          "key": "citizenship",
+          "value": "No"
+        }
+      }
+    ]
+  },
+  "health": {
+    "title": "Do you have any health problems?",
+    "questions": [
+      {
+        "value": "healthProblems",
+        "options": ["No", "Yes"]
+      }
+    ]
+  },
+  "employment": {
+    "title": "Are you employed?",
+    "questions": [
+      {
+        "value": "isEmployed",
+        "options": ["No", "Yes"]
+      },
+      {
+        "label": "Title or type of work?",
+        "value": "employmentType",
+        "condition": {
+          "key": "isEmployed",
+          "value": "Yes"
+        }
+      },
+      {
+        "label": "In what suburb?",
+        "value": "employmentSuburb",
+        "condition": {
+          "key": "isEmployed",
+          "value": "Yes"
+        }
+      },
+      {
+        "label": "Since what month?",
+        "value": "employmentStartMonth",
+        "options": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+        "condition": {
+          "key": "isEmployed",
+          "value": "Yes"
+        }
+      },
+      {
+        "type": "number",
+        "label": "Since what year?",
+        "value": "employmentStartYear",
+        "condition": {
+          "key": "isEmployed",
+          "value": "Yes"
+        }
+      }
+    ]
+  }
+}
