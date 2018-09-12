@@ -5,6 +5,7 @@ import BasicPage from './../components/BasicPage';
 import Typography from '@material-ui/core/Typography';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Button from '@material-ui/core/Button';
+import withRoot from '../material-ui/withRoot';
 
 
 
@@ -36,8 +37,13 @@ function IndexPage() {
           This tool will help you create a basic affidavit. An affidavit is a very important document when seeking legal assistance.
         </Typography>
         <div style={{ paddingTop: '3rem' }}>
-          <Link to="/about" style={{ textDecoration: 'none' }}>
-            <Button variant="outlined" fullWidth>Learn more about affidavit</Button>
+          <Link to="/about-affidavit" style={{ textDecoration: 'none' }}>
+            <Button variant="contained" fullWidth>What is an affidavit?</Button>
+          </Link>
+        </div>
+        <div style={{ paddingTop: '1.5rem' }}>
+          <Link to="/about-tool" style={{ textDecoration: 'none' }}>
+            <Button variant="contained" fullWidth>What is this tool?</Button>
           </Link>
         </div>
       </div>
@@ -46,4 +52,4 @@ function IndexPage() {
 }
 
 
-export default IndexPage;
+export default withRoot(IndexPage);

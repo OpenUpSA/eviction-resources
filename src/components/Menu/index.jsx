@@ -22,7 +22,6 @@ const buildList = (setExpanded, expanded, id, items, selected) => (
         {
           items.map(({ display, url }) => (
             <Link to={url} key={display} style={{ textDecoration: 'none' }}>
-            {console.log(display !== selected)}
               <ListItem button selected={display === selected}>
                 <ListItemText inset primary={display} style={{ paddingLeft: '1rem' }}/>
               </ListItem>
@@ -43,8 +42,6 @@ class Menu extends Component {
     this.state = {
       expanded: expanded || null,
     }
-
-    console.log(expanded)
 
     this.events = {
       setExpanded: this.setExpanded.bind(this),
@@ -92,7 +89,7 @@ function Markup({ open, onClose, expanded, setExpanded, selected }) {
         {buildList(setExpanded, expanded, 'Affidavits', buttons.manage, selected)}
         <Divider />
       </List>
-      <Button onClick={onClose} variant="outlined" style={{ margin: '2rem' }}>Close Menu</Button>
+      <Button onClick={onClose} variant="contained" style={{ margin: '2rem' }}>Close Menu</Button>
     </Drawer>
   )
 }

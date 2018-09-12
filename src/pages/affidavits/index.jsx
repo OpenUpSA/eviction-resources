@@ -3,6 +3,7 @@ import Link from 'gatsby-link';
 import Button from '@material-ui/core/Button';
 import AffidavitsList from './../../components/AffidavitsList';
 import { connect } from 'react-redux';
+import withRoot from '../../material-ui/withRoot';
 
 
 import BasicPage from './../../components/BasicPage';
@@ -56,4 +57,4 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 });
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(AffidavitsPage);
+export default connect(mapStateToProps, mapDispatchToProps)(withRoot(AffidavitsPage));

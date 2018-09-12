@@ -4,7 +4,6 @@ import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
-import { withStyles } from '@material-ui/core/styles';
 import LinearProgress from '@material-ui/core/LinearProgress';
 
 const monthNames = ["January", "February", "March", "April", "May", "June",
@@ -37,4 +36,4 @@ function AffidavitPreview({ classes, name, occupants, date, completed = 0 }) {
 }
 
 
-export default withStyles({ button: { width: '100%' }})(AffidavitPreview)
+export default AffidavitPreview;

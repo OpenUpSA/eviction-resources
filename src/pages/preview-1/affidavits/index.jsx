@@ -22,7 +22,6 @@ import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import Card from '@material-ui/core/Card';
 import questions from './questions.json';
-import { withStyles } from '@material-ui/core/styles';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import CardContent from '@material-ui/core/CardContent';
 import Chip from '@material-ui/core/Chip';
@@ -479,13 +478,10 @@ function RawPersonPreview({ classes, name, representative }) {
   )
 }
 
-const PersonPreview = withStyles({ button: { width: '100%' }})(RawPersonPreview)
+const PersonPreview = RawPersonPreview;
 
 function Occupants({ setView, people, active, affidavits }) {
   const peopleList = affidavits[active.affidavit].people;
-  console.log(peopleList.length - 1)
-
-
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>

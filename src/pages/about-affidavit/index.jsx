@@ -4,6 +4,7 @@ import Link from 'gatsby-link';
 import BasicPage from './../../components/BasicPage';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
+import withRoot from '../../material-ui/withRoot';
 
 
 const actions = (
@@ -40,4 +41,4 @@ function AboutAffidavitPage() {
 }
 
 
-export default AboutAffidavitPage;
+export default withRoot(AboutAffidavitPage);
