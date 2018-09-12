@@ -1,8 +1,8 @@
 const manifest = {
   resolve: 'gatsby-plugin-manifest',
   options: {
-    name: "Eviction Resources",
-    short_name: "Eviction",
+    name: "Affidavit Generator",
+    short_name: "Affidavit Generator",
     start_url: "/",
     background_color: "#3f51b5",
     theme_color: "#3f51b5",
@@ -21,5 +21,6 @@ module.exports = {
     'gatsby-plugin-react-next',
     manifest,
     'gatsby-plugin-offline',
+    'gatsby-plugin-page-transitions',
   ],
 }

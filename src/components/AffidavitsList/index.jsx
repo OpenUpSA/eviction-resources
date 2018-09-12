@@ -34,7 +34,6 @@ function calcEntireAverageCompleted(affidavitId, affidavits, people) {
   const affidavit = affidavits[affidavitId]
   const array = affidavit.people.map(id => determinePercentageCompleted(people[id]))
   const meanResult = mean(array);
-  console.log(affidavit, array, meanResult, affidavit.people.length)
   return affidavit.people.length === 1 ? Math.floor(meanResult / 3) : meanResult;
 }
 
