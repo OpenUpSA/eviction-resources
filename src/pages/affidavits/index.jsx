@@ -1,19 +1,16 @@
 import React from 'react';
 import Link from 'gatsby-link';
-import Button from '@material-ui/core/Button';
-import AffidavitsList from './../../components/AffidavitsList';
 import { connect } from 'react-redux';
+
+import AffidavitsList from './../../components/AffidavitsList';
 import withRoot from '../../material-ui/withRoot';
-
-
+import AnimateButton from '../../components/AnimateButton';
 import BasicPage from './../../components/BasicPage';
 
 
 const actions = (
   <Link to="/affidavits" style={{ textDecoration: 'none' }}>
-    <Button variant="contained" color="primary" fullWidth size="large">
-      Create Affidavit
-    </Button>
+    <AnimateButton variant="contained" color="primary" fullWidth size="large" text="Create Affidavit" />
   </Link>
 )
 

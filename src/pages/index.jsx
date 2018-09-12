@@ -4,7 +4,7 @@ import Link from 'gatsby-link';
 import BasicPage from './../components/BasicPage';
 import Typography from '@material-ui/core/Typography';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import Button from '@material-ui/core/Button';
+import AnimateButton from '../components/AnimateButton';
 import withRoot from '../material-ui/withRoot';
 
 
@@ -12,9 +12,7 @@ import withRoot from '../material-ui/withRoot';
 
 const actions = (
   <Link to="/affidavits" style={{ textDecoration: 'none' }}>
-    <Button variant="contained" color="primary" fullWidth size="large">
-      Get Started
-    </Button>
+    <AnimateButton variant="contained" color="primary" fullWidth size="large" text="Get Started" />
   </Link>
 )
 
@@ -38,12 +36,12 @@ function IndexPage() {
         </Typography>
         <div style={{ paddingTop: '3rem' }}>
           <Link to="/about-affidavit" style={{ textDecoration: 'none' }}>
-            <Button variant="contained" fullWidth>What is an affidavit?</Button>
+            <AnimateButton variant="contained" fullWidth text="What is an affidavit?" />
           </Link>
         </div>
         <div style={{ paddingTop: '1.5rem' }}>
           <Link to="/about-tool" style={{ textDecoration: 'none' }}>
-            <Button variant="contained" fullWidth>What is this tool?</Button>
+            <AnimateButton variant="contained" fullWidth text="What is this tool?" />
           </Link>
         </div>
       </div>

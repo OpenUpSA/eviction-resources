@@ -11,10 +11,10 @@ const monthNames = ["January", "February", "March", "April", "May", "June",
 ];
 
 
-function AffidavitPreview({ classes, name, occupants, date, completed = 0 }) {
+function AffidavitPreview({ name, occupants, date, completed = 0 }) {
   return (
     <Card>
-      <CardActionArea className={classes.button}>
+      <CardActionArea>
         <CardContent>
           <Typography gutterBottom variant="headline" component="h2">
             {name}

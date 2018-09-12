@@ -1,17 +1,15 @@
 import React from 'react';
 import Link from 'gatsby-link';
-
-import BasicPage from './../../components/BasicPage';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import withRoot from '../../material-ui/withRoot';
 
+import BasicPage from './../../components/BasicPage';
+import withRoot from '../../material-ui/withRoot';
+import AnimateButton from '../../components/AnimateButton';
 
 const actions = (
   <Link to="/affidavits" style={{ textDecoration: 'none' }}>
-    <Button variant="contained" color="primary" fullWidth size="large">
-      Get Started
-    </Button>
+    <AnimateButton variant="contained" color="primary" fullWidth size="large" text="Get Started" />
   </Link>
 )
 
