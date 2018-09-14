@@ -10,6 +10,9 @@ import Input from '@material-ui/core/Input';
 import MenuItem from '@material-ui/core/MenuItem';
 import { connect } from 'react-redux';
 import InputAdornment from '@material-ui/core/InputAdornment';
+import Chip from '@material-ui/core/Chip';
+import Button from '@material-ui/core/Button';
+
 
 import BasicPage from './../../components/BasicPage';
 import withRoot from '../../material-ui/withRoot';
@@ -167,6 +170,86 @@ function Markup({ changeAttribute, people, personId, notification, sendEmail }) 
   const person = people[personId];
   const completed = calcCompleted(createSemanticObject(person))
 
+
+  class List extends Component {
+    constructor(...props) {
+      super(...props)
+
+      this.state = {
+        input: '',
+      }
+
+      this.events = {
+        addItem: this.addItem.bind(this),
+        updateText: this.updateText.bind(this),
+        removeItem: this.removeItem.bind(this),
+      }
+    }
+
+    addItem() {
+      const { id } = this.props;
+      const { input } = this.state;
+      if (input === '') {
+        return null;
+      }
+
+      const currentList = person[id] !== '' ? JSON.parse(person[id]) : [];
+      changeAttribute(personId, id, JSON.stringify([ ...currentList, input ]));
+      this.setState({ input: '' })
+    }
+
+    removeItem(name) {
+      const { id } = this.props;
+      const currentList = person[id] !== '' ? JSON.parse(person[id]) : [];
+      changeAttribute(personId, id, JSON.stringify(currentList.filter(val => val !== name)));
+    }
+
+    updateText(input) {
+      this.setState({ input })
+    }
+
+    render() {
+      const { id, label } = this.props;
+      const currentList = person[id] !== '' ? JSON.parse(person[id]) : [];
+      const { input } = this.state;
+      const { addItem, updateText, removeItem } = this.events;
+      return <ListMarkup {...{ label, id, input, addItem, updateText, currentList, removeItem }} />
+    }
+  }
+
+
+  const ListMarkup = props => {
+    const { currentList, input, addItem, updateText, removeItem, label, id } = props;
+    
+    return (
+      <div style={{ marginBottom: '3rem' }}>
+        <FormControl fullWidth>
+          <TextField
+            value={input}
+            onChange={event => updateText(event.target.value)}
+            margin="normal"
+            label={label}
+            id={id}
+            style={{ marginBottom: '2rem' }}
+          />
+        </FormControl>
+        <Button variant="contained" onClick={addItem} style={{ marginBottom: '2rem' }} fullWidth>
+          Add above item
+        </Button>
+        {
+          currentList.map((name, index) => (
+            <Chip
+              style={{ margin: '0.25rem' }}
+              key={index}
+              label={name}
+              onDelete={() => removeItem(name)}
+            />
+          ))
+        }
+      </div>
+    )
+  }
+
   return (
     <BasicPage 
       modalProps={notification}
@@ -186,9 +269,9 @@ function Markup({ changeAttribute, people, personId, notification, sendEmail }) 
           {buildSelect('gender', 'Gender', ['Male', 'Female', 'Other'])}
           {buildInput('age', 'Age', { type: 'number', min: 18, max: 120 })}
           {buildSelect('married', 'Are you married?', ['No', 'Yes'])}
-          {buildSelect('speakingEnglish', 'Speaking English comfort level?', ['Excellent', 'Okay', 'Poor'])}
-          {buildSelect('readingEnglish', 'Reading English comfort level?', ['Excellent', 'Okay', 'Poor'])}
-          {buildSelect('writingEnglish', 'Writing English comfort level?', ['Excellent', 'Okay', 'Poor'])}
+          {buildSelect('speakingEnglish', 'How well do you speak English?', ['Excellent', 'Okay', 'Poor'])}
+          {buildSelect('readingEnglish', 'How well do you read English?', ['Excellent', 'Okay', 'Poor'])}
+          {buildSelect('writingEnglish', 'How well do you write English?', ['Excellent', 'Okay', 'Poor'])}
           {buildSelect('preferedLanguage', 'Prefered language', ["Afrikaans", "Southern Sotho", "Tsonga", "English", "Tswana", "Swati", "Zulu", "Northern Sotho", "Ndebele", "Xhosa", "Venda"])}
           {buildSelect('citizen', 'Are you South African citizen?', ["No", "Yes"])}
           {person.citizen === 'Yes' && buildInput('idNumber', 'South African Id Number', { type: 'number', max: 9999999999 })}
@@ -200,8 +283,10 @@ function Markup({ changeAttribute, people, personId, notification, sendEmail }) 
           {buildInput('earnMonthly', 'How much earned a month?', { type: 'number', min: 0, max: 1000000, InputProps: { startAdornment: <InputAdornment position="start">R</InputAdornment> } })}
           {buildSelect('soleBreadwinner', 'Are you the sole breadwinner?', ["No", "Yes"])}
           {buildSelect('soleRentPayer', 'Do you pay rent alone?', ["No", "Yes"])}
-          {buildSelect('healthProblems', 'Health problems or disability?', ["No", "Yes"])}
-          {person.healthProblems === 'Yes' && buildInput('healthProblemsList', 'Please specify health problems')}
+          {buildSelect('healthProblems', 'Do you have health problems?', ["No", "Yes"])}
+          {person.healthProblems === 'Yes' && <List id="healthProblemsList" label="Specify a health problem" />}
+          {buildSelect('disability', 'Do you have disabilities?', ["No", "Yes"])}
+          {person.disability === 'Yes' && <List id="disabilityList" label="Specify a disability" />}
           <div style={{ paddingTop: '1rem' }}>
             {buildInput('phone', 'What is your phone number?')}
           </div>

@@ -21,6 +21,8 @@ function createBlankPerson() {
     soleRentPayer: '',
     healthProblems: '',
     healthProblemsList: '',
+    disability: '',
+    disabilityList: '',
     phone: '',
   }
 }

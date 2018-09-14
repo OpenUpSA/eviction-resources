@@ -36,16 +36,35 @@ const calcEmploymentValues = (employed, startEmployYear, startEmployMonth) => {
 }
 
 
-const calcHealthValues = (healthProblems, healthProblemsList) => {
-  if (healthProblems) {
+const calcHealthValues = (healthProblems, healthProblemsList, disability, disabilityList) => {
+  if (healthProblems === 'Yes' && disability === 'Yes') {
     return {
-      healthProblems,
-      healthProblemsList,
+      'Health Problems': healthProblems,
+      'Health Problems List': JSON.parse(healthProblemsList).join(', '),    
+      'Disabilities': disability,
+      'Disabilities List:': JSON.parse(disabilityList).join(', '),   
+    }
+  }
+
+  if (healthProblems === 'Yes') {
+    return {
+      'Health Problems': healthProblems,
+      'Health Problems List': JSON.parse(healthProblemsList).join(', '),      
+      'Disabilities': disability,
+    }
+  }
+
+  if (disability === 'Yes') {
+    return {
+      'Health Problems': healthProblems,
+      'Disabilities': disability,
+      'Disabilities List:': JSON.parse(disabilityList).join(', '),  
     }
   }
 
   return {
     healthProblems,
+    disability,
   }
 }
 
@@ -60,6 +79,8 @@ function createSemanticObject(person) {
     startEmployMonth,
     healthProblems, 
     healthProblemsList,
+    disability,
+    disabilityList,
     relationship,
     ...basicValues,
   } = person;
@@ -68,7 +89,7 @@ function createSemanticObject(person) {
     ...basicValues,
     ...calcCitizenValues(citizen, idNumber, immigrationStatus, refugeeId),
     ...calcEmploymentValues(employed, startEmployYear, startEmployMonth),
-    ...calcHealthValues(healthProblems, healthProblemsList),
+    ...calcHealthValues(healthProblems, healthProblemsList, disability, disabilityList,),
   }
 }
 
