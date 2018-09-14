@@ -261,6 +261,52 @@ function Markup({ changeAttribute, people, personId, notification, sendEmail }) 
     )
   }
 
+
+  const buildYearOptions = (endYear = 2018, amount = 80) => {
+    let yearArray = [];
+    let tempYear = endYear + 1;
+
+    for (let i = 0; i < amount; i++) {
+      tempYear = tempYear - 1;
+      yearArray.push(tempYear)
+    }
+
+    return yearArray.map(text => <MenuItem key={text} value={text}>{text}</MenuItem>)
+  }
+
+
+  const buildEmployDate = () => {
+    return (
+      <Card style={{ margin: '2rem 0' }}>
+        <CardContent>
+          <InputLabel htmlFor="month" style={{ fontSize: '14px' }}>Since when have you been employed?</InputLabel>
+          <div style={{ display: 'flex' }}>
+            <FormControl style={{ flexGrow: 2, marginRight: '1rem' }}>
+              <InputLabel htmlFor="month" style={{ fontSize: '14px' }}>Month</InputLabel>
+              <Select
+                value={person.startEmployMonth}
+                onChange={event => changeAttribute(personId, 'startEmployMonth', event.target.value)}
+                input={<Input name="month" id="month" />}
+              >
+                {["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"].map(text => <MenuItem key={text} value={text}>{text}</MenuItem>)}
+              </Select>
+            </FormControl>
+            <FormControl style={{ flexGrow: 1, marginLeft: '1rem' }}>
+              <InputLabel htmlFor="year" style={{ fontSize: '14px' }}>Year</InputLabel>
+              <Select
+                value={person.startEmployYear}
+                onChange={event => changeAttribute(personId, 'startEmployYear', event.target.value)}
+                input={<Input name="year" id="year" />}
+              >
+                {buildYearOptions()}
+              </Select>
+            </FormControl>
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
+
   return (
     <BasicPage 
       modalProps={notification}
@@ -274,6 +320,11 @@ function Markup({ changeAttribute, people, personId, notification, sendEmail }) 
           {completed}% completed
         </Typography>
         <LinearProgress variant="determinate" value={completed} style={{ marginBottom: '2rem' }} />
+
+        <Typography component="p" style={{ textAlign: 'center' }}>
+          Please fill in the following to the best of your ability:
+        </Typography>
+
         <form>
           {buildInput('firstName', 'First Name')}
           {buildInput('lastName', 'Last Name')}
@@ -289,8 +340,8 @@ function Markup({ changeAttribute, people, personId, notification, sendEmail }) 
           {person.citizen === 'No' && buildInput('immigrationStatus', 'Your immigration status?', ["Refugee status", "Asylumn seeker permit", 'Undocumented/expired permit'])}
           {person.immigrationStatus === 'Refugee status' && buildInput('refugeeId', 'Refugee Id Number', { type: 'number', max: 9999999999 })}
           {buildSelect('employed', 'Are you currently employed?', ["No", "Yes"])}
-          {person.employed === 'Yes' && buildInput('startEmployYear', 'Current job started year?', { type: 'number', min: 1900, max: 2018 })}
-          {person.employed === 'Yes' && buildSelect('startEmployMonth', 'Current job started month?', ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"])}
+          {person.employed === 'Yes' && buildEmployDate()}
+          {person.employed === 'Yes' && buildInput('employedType', 'What do you do for work')}
           {buildInput('earnMonthly', 'How much earned a month?', { type: 'number', min: 0, max: 1000000, InputProps: { startAdornment: <InputAdornment position="start">R</InputAdornment> } })}
           {buildSelect('soleBreadwinner', 'Are you the sole breadwinner?', ["No", "Yes"])}
           {buildSelect('soleRentPayer', 'Do you pay rent alone?', ["No", "Yes"])}
