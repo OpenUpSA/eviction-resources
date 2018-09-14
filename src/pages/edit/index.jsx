@@ -71,7 +71,7 @@ class EditPage extends Component {
     const emailUrl = `mailto:shaun@nu.org.za?subject=Eviction%20Affidavit%3A%20${info.firstName}%20${info.lastName}&body=${encodeURIComponent(convertStateIntoEmail(info).join(''))}`;
 
     if (completed === 100) {
-      window.open(emailUrl, '_blank');
+      return window.open(emailUrl, '_blank');
     }
 
     return this.setState({ 
