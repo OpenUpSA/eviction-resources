@@ -12,7 +12,8 @@ import { connect } from 'react-redux';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Chip from '@material-ui/core/Chip';
 import Button from '@material-ui/core/Button';
-
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
 
 import BasicPage from './../../components/BasicPage';
 import withRoot from '../../material-ui/withRoot';
@@ -109,35 +110,42 @@ const actions = event => <AnimateButton onClick={event} variant="contained" colo
 
 const createBuildInput = (personId, changeAttribute, people) => {
   return (id, label, otherProps = {}) => (
-    <FormControl fullWidth>
-      <TextField
-        value={people[personId][id]}
-        onChange={event => changeAttribute(personId, id, event.target.value)}
-        margin="normal"
-        {...{ id, label }}
-        {...otherProps}
-      />
-    </FormControl>
+    <Card style={{ margin: '2rem 0' }}>
+      <CardContent>
+        <FormControl fullWidth>
+          <TextField
+            value={people[personId][id]}
+            onChange={event => changeAttribute(personId, id, event.target.value)}
+            margin="normal"
+            InputLabelProps={{ style: { fontSize: '14px' }}}
+            {...{ id, label }}
+            {...otherProps}
+          />
+        </FormControl>
+      </CardContent>
+    </Card>
   )
 }
 
 
 const createBuildSelect = (personId, changeAttribute, people) => {
   return (id, label, options) => (
-    <div style={{ padding: '1.5rem 0 1rem' }}>
-      <FormControl fullWidth>
-        <InputLabel htmlFor={id}>{label}</InputLabel>
-        <Select
-          value={people[personId][id]}
-          onChange={event => changeAttribute(personId, id, event.target.value)}
-          input={<Input name={id} id={id} />}
-        >
-          {
-            options.map(value => <MenuItem key={value} value={value}>{value}</MenuItem>)
-          }
-        </Select>
-      </FormControl>
-    </div>
+    <Card style={{ margin: '2rem 0' }}>
+      <CardContent>
+        <FormControl fullWidth>
+          <InputLabel htmlFor={id} style={{ fontSize: '14px' }}>{label}</InputLabel>
+          <Select
+            value={people[personId][id]}
+            onChange={event => changeAttribute(personId, id, event.target.value)}
+            input={<Input name={id} id={id} />}
+          >
+            {
+              options.map(value => <MenuItem key={value} value={value}>{value}</MenuItem>)
+            }
+          </Select>
+        </FormControl>
+      </CardContent>
+    </Card>
   )
 }
 
@@ -222,31 +230,34 @@ function Markup({ changeAttribute, people, personId, notification, sendEmail }) 
     const { currentList, input, addItem, updateText, removeItem, label, id } = props;
     
     return (
-      <div style={{ marginBottom: '3rem' }}>
-        <FormControl fullWidth>
-          <TextField
-            value={input}
-            onChange={event => updateText(event.target.value)}
-            margin="normal"
-            label={label}
-            id={id}
-            style={{ marginBottom: '2rem' }}
-          />
-        </FormControl>
-        <Button variant="contained" onClick={addItem} style={{ marginBottom: '2rem' }} fullWidth>
-          Add above item
-        </Button>
-        {
-          currentList.map((name, index) => (
-            <Chip
-              style={{ margin: '0.25rem' }}
-              key={index}
-              label={name}
-              onDelete={() => removeItem(name)}
+      <Card style={{ margin: '2rem 0' }}>
+        <CardContent>
+          <FormControl fullWidth>
+            <TextField
+              value={input}
+              onChange={event => updateText(event.target.value)}
+              margin="normal"
+              label={label}
+              id={id}
+              style={{ marginBottom: '2rem' }}
+              InputLabelProps={{ style: { fontSize: '14px' }}}
             />
-          ))
-        }
-      </div>
+          </FormControl>
+          <Button variant="contained" onClick={addItem} style={{ marginBottom: '2rem' }} fullWidth>
+            Add above item
+          </Button>
+          {
+            currentList.map((name, index) => (
+              <Chip
+                style={{ margin: '0.25rem' }}
+                key={index}
+                label={name}
+                onDelete={() => removeItem(name)}
+              />
+            ))
+          }
+        </CardContent>
+      </Card>
     )
   }
 
@@ -284,9 +295,9 @@ function Markup({ changeAttribute, people, personId, notification, sendEmail }) 
           {buildSelect('soleBreadwinner', 'Are you the sole breadwinner?', ["No", "Yes"])}
           {buildSelect('soleRentPayer', 'Do you pay rent alone?', ["No", "Yes"])}
           {buildSelect('healthProblems', 'Do you have health problems?', ["No", "Yes"])}
-          {person.healthProblems === 'Yes' && <List id="healthProblemsList" label="Specify a health problem" />}
+          {person.healthProblems === 'Yes' && <List id="healthProblemsList" label="Type a health problem here" />}
           {buildSelect('disability', 'Do you have disabilities?', ["No", "Yes"])}
-          {person.disability === 'Yes' && <List id="disabilityList" label="Specify a disability" />}
+          {person.disability === 'Yes' && <List id="disabilityList" label="Type a disability here" />}
           <div style={{ paddingTop: '1rem' }}>
             {buildInput('phone', 'What is your phone number?')}
           </div>
