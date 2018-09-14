@@ -298,9 +298,7 @@ function Markup({ changeAttribute, people, personId, notification, sendEmail }) 
           {person.healthProblems === 'Yes' && <List id="healthProblemsList" label="Type a health problem here" />}
           {buildSelect('disability', 'Do you have disabilities?', ["No", "Yes"])}
           {person.disability === 'Yes' && <List id="disabilityList" label="Type a disability here" />}
-          <div style={{ paddingTop: '1rem' }}>
-            {buildInput('phone', 'What is your phone number?')}
-          </div>
+          {buildInput('phone', 'What is your phone number?')}
         </form>
     </BasicPage>
   )
