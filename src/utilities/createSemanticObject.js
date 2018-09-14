@@ -60,6 +60,7 @@ function createSemanticObject(person) {
     startEmployMonth,
     healthProblems, 
     healthProblemsList,
+    relationship,
     ...basicValues,
   } = person;
 
