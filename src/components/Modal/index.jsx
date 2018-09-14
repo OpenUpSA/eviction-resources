@@ -4,9 +4,11 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import { Typography } from '@material-ui/core';
 
 
-function Modal({ open, title, close, approve, reject, content }) {
+
+function Modal({ open, title, close, approve, reject, description }) {
 
   const buildReject = () => {
     if (typeof reject.click === 'function') {
@@ -18,7 +20,7 @@ function Modal({ open, title, close, approve, reject, content }) {
     }
 
     return (
-      <a href={reject.click} target="_blank">
+      <a href={reject.click} target="_blank" style={{ textDecoration: 'none' }}>
         <Button color="primary">
           {reject.text}
         </Button>
@@ -36,7 +38,7 @@ function Modal({ open, title, close, approve, reject, content }) {
     }
 
     return (
-      <a href={approve.click} target="_blank">
+      <a href={approve.click} target="_blank" style={{ textDecoration: 'none' }}>
         <Button color="primary">
           {approve.text}
         </Button>
@@ -54,7 +56,9 @@ function Modal({ open, title, close, approve, reject, content }) {
       >
         <DialogTitle id="alert-dialog-title">{title}</DialogTitle>
         <DialogContent>
-          {content}
+          <Typography component="p">
+            {description}
+          </Typography>
         </DialogContent>
         <DialogActions>
           {reject && buildReject()}

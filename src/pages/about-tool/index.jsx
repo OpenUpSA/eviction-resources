@@ -18,12 +18,12 @@ const actions = (
  */
 function AboutToolPage() {
   return (
-    <BasicPage 
+    <BasicPage
       actions={actions}
       heading="What is this tool and why is it important?"
       back="/"
       expanded="Overview"
-      selected="What is this tool?"
+      selected="Introduction"
     >
       <div>
         <Typography component="p">

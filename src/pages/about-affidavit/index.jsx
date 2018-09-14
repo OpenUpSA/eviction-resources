@@ -1,7 +1,6 @@
 import React from 'react';
 import Link from 'gatsby-link';
 import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
 
 import BasicPage from './../../components/BasicPage';
 import withRoot from '../../material-ui/withRoot';
@@ -23,8 +22,7 @@ function AboutAffidavitPage() {
       actions={actions}
       heading="What is an affidavit and why is it important?"
       back="/"
-      expanded="Overview"
-      selected="What is an affidavit?"
+      selected="Introduction"
     >
       <div>
         <Typography component="p">

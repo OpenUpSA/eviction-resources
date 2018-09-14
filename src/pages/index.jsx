@@ -3,7 +3,6 @@ import Link from 'gatsby-link';
 
 import BasicPage from './../components/BasicPage';
 import Typography from '@material-ui/core/Typography';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import AnimateButton from '../components/AnimateButton';
 import withRoot from '../material-ui/withRoot';
 

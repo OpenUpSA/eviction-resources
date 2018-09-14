@@ -1,37 +1,16 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import Link from 'gatsby-link';
-import Drawer from '@material-ui/core/Drawer';
+import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Divider from '@material-ui/core/Divider';
-import Collapse from '@material-ui/core/Collapse';
-import ExpandMore from '@material-ui/icons/ExpandMore';
-import ExpandLess from '@material-ui/icons/ExpandLess';
 import Button from '@material-ui/core/Button';
+import { navigateTo } from 'gatsby-link';
 
 
-const buildList = (setExpanded, expanded, id, items, selected) => (
-  <List>
-    <ListItem button onClick={() => setExpanded(id)}>
-      <ListItemText primary={id} />
-      {expanded === id ? <ExpandLess /> : <ExpandMore />}
-    </ListItem>
-    <Collapse in={expanded === id} timeout="auto" unmountOnExit>
-      <List disablePadding>
-        {
-          items.map(({ display, url }) => (
-            <Link to={url} key={display} style={{ textDecoration: 'none' }}>
-              <ListItem button selected={display === selected}>
-                <ListItemText inset primary={display} style={{ paddingLeft: '1rem' }}/>
-              </ListItem>
-            </Link>
-          ))
-        }
-      </List>
-    </Collapse>
-  </List>
-)
+import { addAffidavit as addAffidavitAction } from './../../redux/actions';
 
 
 class Menu extends Component {
@@ -58,41 +37,52 @@ class Menu extends Component {
 
   render() {
     const { expanded } = this.state;
-    const { open, onClose, selected } = this.props;
+    const { open, onClose, onOpen, selected, addAffidavit } = this.props;
     const { setExpanded } = this.events;
-    return <Markup {...{ expanded, open, onClose, setExpanded, selected }} />
+    return <Markup {...{ addAffidavit, expanded, open, onClose, onOpen, setExpanded, selected }} />
   }
 }
 
 
-const buttons = {
-  overview: [
-    { display: 'Introduction', url: '/' },
-    { display: 'What is an affidavit?', url: '/about-affidavit' },
-    { display: 'What is this tool?', url: '/about-tool' },
-  ],
-  manage: [
-    { display: 'Create an affidavit', url: '/affidavits' },
-    { display: 'View all affidavits', url: '/affidavits' },
-  ]
+const fireEvent = action => {
+  const id = action();
+  navigateTo(`/edit?id=${id}`);
 }
 
 
-
-function Markup({ open, onClose, expanded, setExpanded, selected }) {
+function Markup({ open, onClose, onOpen, selected, addAffidavit }) {
   return (
-    <Drawer {...{ open, onClose }}>
+    <SwipeableDrawer {...{ open, onClose, onOpen }}>
       <List style={{ width: '80vw', maxWidth: '400px' }}>
+        <Link to="/" style={{ textDecoration: 'none' }}>
+          <ListItem button selected={selected === 'Introduction'}>
+            <ListItemText primary="Introduction" />
+          </ListItem>
+        </Link>
         <Divider />
-        {buildList(setExpanded, expanded, 'Overview', buttons.overview, selected)}
+        <Link to="/affidavits" style={{ textDecoration: 'none' }}>
+          <ListItem button selected={"View all affidavits" === selected}>
+            <ListItemText primary="View all affidavits" />
+          </ListItem>
+        </Link>
         <Divider />
-        {buildList(setExpanded, expanded, 'Affidavits', buttons.manage, selected)}
-        <Divider />
+        <ListItem button selected={"Create an affidavit" === selected} onClick={() => fireEvent(addAffidavit)}>
+          <ListItemText primary="Create an affidavit" />
+        </ListItem>
       </List>
       <Button onClick={onClose} variant="contained" style={{ margin: '2rem' }}>Close Menu</Button>
-    </Drawer>
+    </SwipeableDrawer>
   )
 }
 
 
-export default Menu;
+const mapStateToProps = (ownProps) => ownProps;
+
+
+const mapDispatchToProps = (dispatch, ownProps) => ({
+  ...ownProps,
+  addAffidavit: () => dispatch(addAffidavitAction()),
+});
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(Menu);

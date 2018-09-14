@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
+import React, { Component, Children } from 'react';
 import Typography from '@material-ui/core/Typography';
 import PageTransition from 'gatsby-plugin-page-transitions';
 
-import styles from './styles.module.css';
 import Header from './../Header';
 import Menu from './../Menu';
+import Modal from './../Modal';
 
 /**
  * Control state of landing page/splash screen. Add loading animation to 'Get started' button if
@@ -15,18 +15,12 @@ class BasicPage extends Component {
     super(...props);
 
     this.state = {
-      loading: false,
       menu: false,
     }
 
     this.events = {
-      setLoading: this.setLoading.bind(this),
       setMenu: this.setMenu.bind(this),
     }
-  }
-
-  setLoading() {
-    this.setState({ loading: true })
   }
 
   setMenu(value) {
@@ -39,13 +33,24 @@ class BasicPage extends Component {
 
   render() {
     const { loading, menu } = this.state
-    const { setLoading, setMenu } = this.events;
-    const { title, back, children, actions, heading, progress, expanded, selected } = this.props;
+    const { setMenu } = this.events;
+    const {
+      modalProps,
+      title,
+      back,
+      actions,
+      heading,
+      progress,
+      expanded,
+      selected,
+      children,
+    } = this.props;
+
+
     return (
       <Markup 
         {...{ 
-          loading, 
-          setLoading,
+          loading,
           title,
           back,
           children,
@@ -56,6 +61,7 @@ class BasicPage extends Component {
           setMenu,
           expanded,
           selected,
+          modalProps,
         }} 
       />
     )
@@ -72,11 +78,23 @@ class BasicPage extends Component {
  * contains text and input fields.
  */
 function Markup(props) {
-  const { title, back, children, actions, heading, progress, menu, setMenu, expanded, selected } = props;
+  const { 
+    title, 
+    back, 
+    children, 
+    actions,
+    heading,
+    progress,
+    menu,
+    setMenu,
+    expanded,
+    selected,
+    modalProps = { open: false },
+  } = props;
 
   const headingMarkup = (
-    <div className={styles.heading}>
-      <Typography variant="display1" component="h1">
+    <div style={{ marginBottom: '2rem' }}>
+      <Typography variant="display1" component="h1" style={{ textAlign: 'center' }}>
         {heading}
       </Typography>
     </div>
@@ -97,20 +115,37 @@ function Markup(props) {
   )
 
   const actionsMarkup = (
-    <aside className={styles.actions}>
+    <aside style={{ padding: '2rem 2rem 3rem' }}>
       {actions}
     </aside>
   )
 
+  const rootStyle = {
+    display: 'flex',
+    flexDirection: 'column',
+    minHeight: '100vh',
+  }
+
+  const mainStyle = {
+    display: 'flex',
+    flexDirection: 'column', 
+    flexGrow: 1,
+    padding: '2rem',
+    position: 'relative',
+  }
+
   return (
-    <div className={styles.root}>
-      <Menu {...{ expanded, selected }} open={menu} onClose={() => setMenu(false)}/>
+    <div style={rootStyle}>
+      <Modal {...modalProps} />
+      <Menu {...{ expanded, selected }} open={menu} onClose={() => setMenu(false)} onOpen={() => setMenu(true)}/>
       <Header {...{ title, back, setMenu }} />
-      <main className={styles.content}>      
+      <main style={mainStyle}>    
+        {progress && buildProgressMarkup(progress)}
         <PageTransition>
-          {progress && buildProgressMarkup(progress)}
-          {heading && headingMarkup}
-          {children}
+          <div>
+            {heading && headingMarkup}
+            {children}
+          </div>
         </PageTransition>
       </main>
       {actions && actionsMarkup}

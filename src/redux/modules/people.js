@@ -1,36 +1,18 @@
 import { omit } from 'lodash';
 
+import createBlankPerson from './../../utilities/createBlankPerson';
+
 
 const CREATE = 'person/CREATE';
 const DELETE = 'person/DELETE';
 const CHANGE_ATTRIBUTE = 'person/CHANGE_ATTRIBUTE';
-
-const blankPerson = {
-  firstName: '',
-  lastName: '',
-  age: '',
-  gender: '',
-  englishSpeaking: '',
-  englishReading: '',
-  englishWriting: '',
-  homeLanguage: '',
-  citizenship: '',
-  otherCitizenship: '',
-  healthProblems: '',
-  isEmployed: '',
-  employmentType: '',
-  employmentSuburb: '',
-  employmentStartMonth: '',
-  employmentStartYear: '',
-  relationship: '',
-};
 
 
 export default function reducer(state = {}, action = {}) {
   switch (action.type) {
     case CREATE: return {
       ...state,
-      [action.payload]: blankPerson,
+      [action.payload]: createBlankPerson(),
     };
 
     case DELETE: return {

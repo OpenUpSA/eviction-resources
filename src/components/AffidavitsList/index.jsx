@@ -1,8 +1,34 @@
 import React, { Component } from 'react';
-import AffidavitPreview from './../AffidavitPreview';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import Typography from '@material-ui/core/Typography';
 import { mean } from 'lodash';
+
+import AffidavitPreview from './../AffidavitPreview';
+import createSemanticObject from './../../utilities/createSemanticObject';
+
+
+const calcCompleted = object => {
+  const amount = Object.keys(object).filter(key => object[key] !== '').length;
+  const total = Object.keys(object).length;
+  return Math.floor((amount / total) * 100);
+}
+
+
+const calcPreviewProps = (id, affidavits, people) => {
+  const { firstName, lastName } = people[affidavits[id].representative];
+  const hasFirstAndLastNames = firstName && lastName;
+  const name = hasFirstAndLastNames ? `${firstName} ${lastName}` : 'Unknown Person'
+  const occupants = Object.keys(affidavits[id].people).length;
+  const date = new Date(affidavits[id].created);
+  const completed = calcCompleted(createSemanticObject(people[affidavits[id].representative]))
+
+  return {
+    completed,
+    name,
+    occupants,
+    date,
+  }
+}
 
 
 function determinePercentageCompleted(object) {
@@ -38,13 +64,21 @@ function calcEntireAverageCompleted(affidavitId, affidavits, people) {
 }
 
 
-function AffidavitsList({ affidavits, people, itemClickCallback }) {
+function AffidavitsList(props) {
+  const {
+    affidavits,
+    people,
+    itemClickCallback,
+    deleteCb: deleteCbRaw,
+    sendCb: sendCbRaw,
+  } = props
+
   const affidavitsKeys = Object.keys(affidavits);
 
   if (affidavitsKeys.length < 1) {
     return (
       <div style={{ textAlign: 'center' }}>       
-        <ErrorOutlineIcon /> 
+        <ErrorOutlineIcon style={{ fontSize: '3rem' }} /> 
         <Typography component="p">
           You have not created any affidavits yet.
         </Typography>
@@ -55,17 +89,16 @@ function AffidavitsList({ affidavits, people, itemClickCallback }) {
   return (
     <div>
       {
-        affidavitsKeys.map((key) => {
-          const { firstName, lastName } = people[affidavits[key].representative];
-          const hasFirstAndLastNames = firstName && lastName;
-          const displayName = hasFirstAndLastNames ? `${firstName} ${lastName}` : 'Unknown Person'
-          const occupants = Object.keys(affidavits[key].people).length;
-          const date = new Date(affidavits[key].created);
-          const completed = calcEntireAverageCompleted(key, affidavits, people);
+        affidavitsKeys.map((key, index) => {
+          const styling = index !== affidavitsKeys.length - 1 ? { marginBottom: '2rem' } : {};
+          const deleteCb = deleteCbRaw ? () => deleteCbRaw(key) : null;
+          const id = key;
+          const sendCb = sendCbRaw ? () => sendCbRaw(key) : null;
+          const props = { ...calcPreviewProps(key, affidavits, people), deleteCb, sendCb, id }
 
           return (
-            <div style={{ margin: '0.5rem' }} key={key} onClick={() => itemClickCallback && itemClickCallback(key)}>
-              <AffidavitPreview name={displayName} occupants={occupants} date={date} completed={completed} />
+            <div style={styling} key={key} onClick={() => itemClickCallback && itemClickCallback(key)}>
+              <AffidavitPreview {...props} />
             </div>
           )
         })
