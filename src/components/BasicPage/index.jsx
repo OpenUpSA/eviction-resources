@@ -125,6 +125,7 @@ function Markup(props) {
     flexDirection: 'column',
     minHeight: '100vh',
     maxWidth: '700px',
+    margin: '0 auto',
   }
 
   const mainStyle = {

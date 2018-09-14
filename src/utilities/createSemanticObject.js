@@ -85,11 +85,19 @@ function createSemanticObject(person) {
     ...basicValues,
   } = person;
 
+  const forceArray = string => {
+    if (string === '') {
+      return '[]'
+    }
+
+    return string;
+  }
+
   return {
     ...basicValues,
     ...calcCitizenValues(citizen, idNumber, immigrationStatus, refugeeId),
     ...calcEmploymentValues(employed, startEmployYear, startEmployMonth),
-    ...calcHealthValues(healthProblems, healthProblemsList, disability, disabilityList,),
+    ...calcHealthValues(healthProblems, forceArray(healthProblemsList), disability, forceArray(disabilityList)),
   }
 }
 
