@@ -1,0 +1,23 @@
+.delete {
+  transition: transform 0.4s, opacity 0.2s;
+}
+
+.delete-enter {
+  transform: scale(0);
+  opacity: 0;
+}
+
+.delete-enter-active {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.delete-exit {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.delete-exit-active {
+  transform: scale(0);
+  opacity: 0;
+}

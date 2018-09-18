@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { navigateTo } from 'gatsby-link';
+import Link from 'gatsby-link';
 
 
 import { addAffidavit as addAffidavitAction } from './../../redux/actions';
@@ -53,8 +53,6 @@ class AffidavitsPage extends Component {
     const info = createSemanticObject(people[affidavits[id].representative]);
     const completed = calcCompleted(info);
     const emailUrl = `mailto:shaun@nu.org.za?subject=Eviction%20Affidavit%3A%20${info.firstName}%20${info.lastName}&body=${encodeURIComponent(convertStateIntoEmail(info).join(''))}`;
-
-    console.log(completed)
 
     if (completed === 100) {
       return window.open(emailUrl, '_blank');
@@ -111,18 +109,6 @@ class AffidavitsPage extends Component {
 }
 
 
-const buildActions = addAffidavit => {
-  const fireEvent = () => {
-    const id = addAffidavit();
-    navigateTo(`/edit?id=${id}`);
-  }
-
-  return (
-    <div onClick={fireEvent}>
-      <AnimateButton variant="contained" color="primary" fullWidth size="large" text="Create Affidavit" />
-    </div>
-  )
-}
 
 /**
  * Presentational component for affidavit about page
@@ -140,11 +126,9 @@ function Markup({ affidavits, people, addAffidavit, deletePrompt, notification, 
     )
   }
 
-
   return (
     <BasicPage 
       modalProps={notification}
-      actions={buildActions(addAffidavit)}
       back="/"
       title="Saved Affidavits"
       expanded="Affidavits"
@@ -157,6 +141,9 @@ function Markup({ affidavits, people, addAffidavit, deletePrompt, notification, 
           sendCb={sendEmail}
         />
       </div>
+      <Link to="/disclaimer" style={{ textDecoration: 'none' }}>
+        <AnimateButton style={{ marginTop: '3rem' }} variant="contained" color="primary" fullWidth size="large" text="Create Affidavit" />
+      </Link>
     </BasicPage>
   )
 }

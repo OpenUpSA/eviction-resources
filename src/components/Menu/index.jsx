@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Link from 'gatsby-link';
-import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
+import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -52,7 +52,7 @@ const fireEvent = action => {
 
 function Markup({ open, onClose, onOpen, selected, addAffidavit }) {
   return (
-    <SwipeableDrawer {...{ open, onClose, onOpen }}>
+    <Drawer {...{ open, onClose }}>
       <List style={{ width: '80vw', maxWidth: '400px' }}>
         <Link to="/" style={{ textDecoration: 'none' }}>
           <ListItem button selected={selected === 'Introduction'}>
@@ -62,16 +62,16 @@ function Markup({ open, onClose, onOpen, selected, addAffidavit }) {
         <Divider />
         <Link to="/affidavits" style={{ textDecoration: 'none' }}>
           <ListItem button selected={"View all affidavits" === selected}>
-            <ListItemText primary="View all affidavits" />
+            <ListItemText primary="Saved eviction cases" />
           </ListItem>
         </Link>
         <Divider />
         <ListItem button selected={"Create an affidavit" === selected} onClick={() => fireEvent(addAffidavit)}>
-          <ListItemText primary="Create an affidavit" />
+          <ListItemText primary="Create eviction case" />
         </ListItem>
       </List>
       <Button onClick={onClose} variant="contained" style={{ margin: '2rem' }}>Close Menu</Button>
-    </SwipeableDrawer>
+    </Drawer>
   )
 }
 

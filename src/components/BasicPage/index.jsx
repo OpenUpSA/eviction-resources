@@ -1,6 +1,8 @@
 import React, { Component, Children } from 'react';
 import Typography from '@material-ui/core/Typography';
 import PageTransition from 'gatsby-plugin-page-transitions';
+import Swipeable from 'react-swipeable'
+import Card from '@material-ui/core/Card'
 
 import Header from './../Header';
 import Menu from './../Menu';
@@ -44,8 +46,9 @@ class BasicPage extends Component {
       expanded,
       selected,
       children,
+      swipeLeft,
+      swipeRight,
     } = this.props;
-
 
     return (
       <Markup 
@@ -62,6 +65,8 @@ class BasicPage extends Component {
           expanded,
           selected,
           modalProps,
+          swipeLeft,
+          swipeRight,
         }} 
       />
     )
@@ -89,6 +94,8 @@ function Markup(props) {
     setMenu,
     expanded,
     selected,
+    swipeLeft,
+    swipeRight,
     modalProps = { open: false },
   } = props;
 
@@ -114,12 +121,6 @@ function Markup(props) {
     </div>
   )
 
-  const actionsMarkup = (
-    <aside style={{ padding: '2rem 2rem 3rem' }}>
-      {actions}
-    </aside>
-  )
-
   const rootStyle = {
     display: 'flex',
     flexDirection: 'column',
@@ -137,7 +138,7 @@ function Markup(props) {
   }
 
   return (
-    <div style={rootStyle}>
+    <Swipeable onSwipedLeft={swipeLeft} onSwipedRight={swipeRight} style={rootStyle}>
       <Modal {...modalProps} />
       <Menu {...{ expanded, selected }} open={menu} onClose={() => setMenu(false)} onOpen={() => setMenu(true)}/>
       <Header {...{ title, back, setMenu }} />
@@ -150,8 +151,7 @@ function Markup(props) {
           </div>
         </PageTransition>
       </main>
-      {actions && actionsMarkup}
-    </div>
+    </Swipeable>
   )
 }
 

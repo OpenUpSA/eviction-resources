@@ -2,9 +2,11 @@ import React, { Component } from 'react';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import Typography from '@material-ui/core/Typography';
 import { mean } from 'lodash';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 import AffidavitPreview from './../AffidavitPreview';
 import createSemanticObject from './../../utilities/createSemanticObject';
+import './styles.css';
 
 
 const calcCompleted = object => {
@@ -87,23 +89,30 @@ function AffidavitsList(props) {
   }
 
   return (
-    <div>
-      {
-        affidavitsKeys.map((key, index) => {
-          const styling = index !== affidavitsKeys.length - 1 ? { marginBottom: '2rem' } : {};
-          const deleteCb = deleteCbRaw ? () => deleteCbRaw(key) : null;
-          const id = key;
-          const sendCb = sendCbRaw ? () => sendCbRaw(key) : null;
-          const props = { ...calcPreviewProps(key, affidavits, people), deleteCb, sendCb, id }
+    <TransitionGroup>
+        {
+          affidavitsKeys.map((key, index) => {
+            const styling = index !== affidavitsKeys.length - 1 ? { marginBottom: '2rem' } : {};
+            const deleteCb = deleteCbRaw ? () => deleteCbRaw(key) : null;
+            const id = key;
+            const sendCb = sendCbRaw ? () => sendCbRaw(key) : null;
+            const props = { ...calcPreviewProps(key, affidavits, people), deleteCb, sendCb, id }
 
-          return (
-            <div style={styling} key={key} onClick={() => itemClickCallback && itemClickCallback(key)}>
-              <AffidavitPreview {...props} />
-            </div>
-          )
-        })
-      }
-    </div>
+            return (
+              <CSSTransition
+                key={key}
+                timeout={400}
+                classNames="delete"
+                className="delete"
+              >
+                <div style={styling} onClick={() => itemClickCallback && itemClickCallback(key)}>
+                  <AffidavitPreview {...props} />
+                </div>
+              </CSSTransition>
+            )
+          })
+        }
+    </TransitionGroup>
   )
 }
 

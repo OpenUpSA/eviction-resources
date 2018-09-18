@@ -5,7 +5,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 
 
 const Layout = ({ children, data }) => (
-  <div>
+  <div style={{ overflowX: 'hidden' }}>
     <Helmet
       title={data.site.siteMetadata.title}
       meta={[
@@ -13,7 +13,6 @@ const Layout = ({ children, data }) => (
         { name: 'keywords', content: 'eviction, cape town, south africa, affidavit' },
       ]}
     />
-    
     <CssBaseline>
       {children()}
     </CssBaseline>

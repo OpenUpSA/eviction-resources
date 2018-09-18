@@ -1,5 +1,5 @@
+import { without } from 'lodash';
 import React, { Component } from 'react';
-import Link from 'gatsby-link';
 import Typography from '@material-ui/core/Typography';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import TextField from '@material-ui/core/TextField';
@@ -9,17 +9,21 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Input from '@material-ui/core/Input';
 import MenuItem from '@material-ui/core/MenuItem';
 import { connect } from 'react-redux';
-import InputAdornment from '@material-ui/core/InputAdornment';
 import Chip from '@material-ui/core/Chip';
-import Button from '@material-ui/core/Button';
+import InputAdornment from '@material-ui/core/InputAdornment';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
+
+import Button from '@material-ui/core/Button';
+import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
+import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 
 import BasicPage from './../../components/BasicPage';
 import withRoot from '../../material-ui/withRoot';
-import AnimateButton from '../../components/AnimateButton';
 import createSemanticObject from './../../utilities/createSemanticObject';
 import { changePersonAttribute } from './../../redux/modules/people';
+import './styles.css';
 
 
 const buildQuestion = (question, answer, index) => {
@@ -50,14 +54,17 @@ const getQueryParams = url => {
 class EditPage extends Component {
   constructor(...props) {
     super(...props);
-
+    
     this.state = {
       personId: null,
       notification: null,
+      currentStep: 0,
+      reverse: false,
     }
 
     this.events = {
       sendEmail: this.sendEmail.bind(this),
+      changeStep: this.changeStep.bind(this),
     }
   }
 
@@ -66,6 +73,21 @@ class EditPage extends Component {
     const { id } = getQueryParams(document.location.search)
     const personId = affidavits[id].representative;
     return this.setState({ personId })
+  }
+
+  changeStep(currentStep) {
+    if (currentStep === false) {
+      this.setState({ reverse: true })
+      return this.setState({ currentStep: this.state.currentStep - 1 })
+    }
+
+    this.setState({ reverse: false })
+
+    if (currentStep) {
+      return this.setState({ currentStep })
+    }
+
+    return this.setState({ currentStep: this.state.currentStep + 1 })
   }
 
   sendEmail(id) {
@@ -97,46 +119,55 @@ class EditPage extends Component {
   }
 
   render() {
-    const { personId, notification } = this.state;
+    const { personId, notification, currentStep, reverse } = this.state;
     const { changeAttribute, affidavits, people } = this.props;
-    const { sendEmail } = this.events;
-    return <Markup {...{ sendEmail, changeAttribute, affidavits, people, personId, notification }} />
+    const { sendEmail, changeStep } = this.events;
+    return <Markup {...{ sendEmail, changeAttribute, reverse, currentStep, changeStep, affidavits, people, personId, notification }} />
   }
 }
 
+const actions = (event, current, modifiedQuestions) => (
+  <div style={{ display: 'flex' }}>
+    <div style={{ width: '50%' }}>
+      {current > 0 && <Button style={{ marginRight: '10px' }}onClick={() => event(false)} variant="contained"fullWidth size="large">Previous</Button>}
+    </div>
+    <div style={{ width: '50%' }}>
+{current < modifiedQuestions.length && <Button style={{ marginLeft: '10px' }} onClick={() => event()} variant="contained" color="primary" fullWidth size="large">Next</Button>}
+    </div>
+  </div>
+);
 
-const actions = event => <AnimateButton onClick={event} variant="contained" color="primary" fullWidth size="large" text="Send" />;
 
-
-const createBuildInput = (personId, changeAttribute, people) => {
+const createBuildInput = (personId, changeAttribute, people, proceed) => {
   return (id, label, otherProps = {}) => (
-    <Card style={{ margin: '2rem 0' }}>
-      <CardContent>
+        <div>
         <FormControl fullWidth>
           <TextField
             value={people[personId][id]}
             onChange={event => changeAttribute(personId, id, event.target.value)}
             margin="normal"
-            InputLabelProps={{ style: { fontSize: '14px' }}}
-            {...{ id, label }}
+            {...{ id }}
             {...otherProps}
           />
         </FormControl>
-      </CardContent>
-    </Card>
+        <Button variant="contained" fullWidth color="primary" style={{ marginTop: '2rem' }} size="large" onClick={() => proceed()}>Save answer</Button>
+        </div>
   )
 }
 
 
-const createBuildSelect = (personId, changeAttribute, people) => {
-  return (id, label, options) => (
-    <Card style={{ margin: '2rem 0' }}>
-      <CardContent>
+const createBuildSelect = (personId, changeAttribute, people, proceed) => {
+    return (id, label, options) => {
+      const action = event => {
+        changeAttribute(personId, id, event.target.value);
+        proceed();
+      }
+
+      return (
         <FormControl fullWidth>
-          <InputLabel htmlFor={id} style={{ fontSize: '14px' }}>{label}</InputLabel>
           <Select
             value={people[personId][id]}
-            onChange={event => changeAttribute(personId, id, event.target.value)}
+            onChange={action}
             input={<Input name={id} id={id} />}
           >
             {
@@ -144,9 +175,8 @@ const createBuildSelect = (personId, changeAttribute, people) => {
             }
           </Select>
         </FormControl>
-      </CardContent>
-    </Card>
-  )
+      )
+    }
 }
 
 
@@ -160,7 +190,7 @@ const calcCompleted = object => {
 /**
  * Presentational component for affidavit about page
  */
-function Markup({ changeAttribute, people, personId, notification, sendEmail }) {
+function Markup({ reverse, changeAttribute, people, personId, notification, changeStep, currentStep, sendEmail }) {
   if (!personId) {
     return (
       <BasicPage 
@@ -173,8 +203,8 @@ function Markup({ changeAttribute, people, personId, notification, sendEmail }) 
     )
   }
 
-  const buildInput = createBuildInput(personId, changeAttribute, people);
-  const buildSelect = createBuildSelect(personId, changeAttribute, people);
+  const buildInput = createBuildInput(personId, changeAttribute, people, changeStep);
+  const buildSelect = createBuildSelect(personId, changeAttribute, people, changeStep);
   const person = people[personId];
   const completed = calcCompleted(createSemanticObject(person))
 
@@ -230,17 +260,14 @@ function Markup({ changeAttribute, people, personId, notification, sendEmail }) 
     const { currentList, input, addItem, updateText, removeItem, label, id } = props;
     
     return (
-      <Card style={{ margin: '2rem 0' }}>
-        <CardContent>
+      <div>
           <FormControl fullWidth>
             <TextField
               value={input}
               onChange={event => updateText(event.target.value)}
               margin="normal"
-              label={label}
               id={id}
               style={{ marginBottom: '2rem' }}
-              InputLabelProps={{ style: { fontSize: '14px' }}}
             />
           </FormControl>
           <Button variant="contained" onClick={addItem} style={{ marginBottom: '2rem' }} fullWidth>
@@ -256,8 +283,10 @@ function Markup({ changeAttribute, people, personId, notification, sendEmail }) 
               />
             ))
           }
-        </CardContent>
-      </Card>
+          <div>
+            <Button variant="contained" color="primary" fullWidth size="large" onClick={() => changeStep()} style={{ marginTop: '2rem' }}>Save answer</Button>
+          </div>
+</div>
     )
   }
 
@@ -275,12 +304,10 @@ function Markup({ changeAttribute, people, personId, notification, sendEmail }) 
   }
 
 
-  const buildEmployDate = () => {
+  const buildEmployDate = (event) => {
     return (
-      <Card style={{ margin: '2rem 0' }}>
-        <CardContent>
-          <InputLabel htmlFor="month" style={{ fontSize: '14px' }}>Since when have you been employed?</InputLabel>
-          <div style={{ display: 'flex' }}>
+      <div>
+          <div style={{ display: 'flex', marginTop: '1.5rem' }}>
             <FormControl style={{ flexGrow: 2, marginRight: '1rem' }}>
               <InputLabel htmlFor="month" style={{ fontSize: '14px' }}>Month</InputLabel>
               <Select
@@ -301,56 +328,309 @@ function Markup({ changeAttribute, people, personId, notification, sendEmail }) 
                 {buildYearOptions()}
               </Select>
             </FormControl>
+            </div>
+            <div>
+              <Button variant="contained" color="primary" fullWidth size="large" onClick={event} style={{ marginTop: '2rem' }}>Save answer</Button>
+            </div>
           </div>
-        </CardContent>
-      </Card>
+    )
+  }
+
+
+  const ageRange = () => {
+    let result = [];
+    for (let i = 18; i < 100; i++) {
+      result.push(i);
+    }
+    return result;
+  }
+  
+  const questions = [
+    {
+      id: 'firstName',
+      title: 'What is your first name?',
+      example: 'John',
+      markup: buildInput('firstName', 'First Name'),
+    },
+    {
+      id: 'lastName',
+      title: `What is your last name ${person.firstName}?`,
+      example: 'Smith',
+      markup: buildInput('lastName', 'Last Name')
+    },
+    {
+      id: 'gender',
+      title: `And your gender?`,
+      example: 'Female',
+      markup: buildSelect('gender', 'Gender', ['Male', 'Female', 'Other']),
+    },
+    {
+      id: 'age',
+      title: `How old are you ${person.firstName}?`,
+      example: '31',
+      markup: buildSelect('age', 'Age', ageRange()),
+    },
+    {
+      id: 'married',
+      title: `Are you married ${person.firstName}?`,
+      example: 'No',
+      markup: buildSelect('married', 'Are you married?', ['No', 'Yes']),
+    },
+    {
+      id: 'speakingEnglish',
+      title: `How well do you speak English?`,
+      example: 'Excellent',
+      markup: buildSelect('speakingEnglish', 'How well do you speak English?', ['Excellent', 'Okay', 'Poor']),
+    },
+    {
+      id: 'readingEnglish',
+      title: `Right. How well do you read English?`,
+      example: 'Excellent',
+      markup: buildSelect('readingEnglish', 'How well do you read English?', ['Excellent', 'Okay', 'Poor']),
+    },
+    {
+      id: 'writingEnglish',
+      title: `And lastly, how well do you write in English?`,
+      example: 'Excellent',
+      markup: buildSelect('writingEnglish', 'How well do you write English?', ['Excellent', 'Okay', 'Poor']),
+    },
+    {
+      id: 'citizen',
+      title: `${person.firstName}, are you a South African citizen?`,
+      example: 'Yes',
+      markup: buildSelect('citizen', 'Are you South African citizen?', ["No", "Yes"]),
+    },
+    {
+      id: 'idNumber',
+      title: `Right, what is your ID number?`,
+      example: '6311035188253',
+      markup: buildInput('idNumber', 'South African Id Number', { type: 'number', max: 9999999999 }),
+    },
+    {
+      id: 'immigrationStatus',
+      title: `Your immigration status?`,
+      example: 'Asylumn seeker permit',
+      markup: buildSelect('immigrationStatus', 'Your immigration status?', ["Refugee status", "Asylumn seeker permit", 'Undocumented/expired permit']),
+    },
+    {
+      id: 'refugeeId',
+      title: `Refugee Id Number?`,
+      markup: buildInput('refugeeId', 'Refugee Id Number', { type: 'number', max: 9999999999 }),
+    },
+    {
+      id: 'employed',
+      title: `Do you have a job at this moment?`,
+      example: 'Yes',
+      markup: buildSelect('employed', 'Are you currently employed?', ["No", "Yes"]),
+    },
+    {
+      id: 'employedDate',
+      title: `What date did you start your current job?`,
+      example: 'January 2015',
+      markup: buildEmployDate(() => changeStep()),
+    },
+    {
+      id: 'employedType',
+      title: `What do you do for work?`,
+      example: 'Domestic Worker',
+      markup: buildInput('employedType', ''),
+    },
+    {
+      id: 'earnMonthly',
+      title: `How much earned a month?`,
+      example: 'R3500',
+      markup: buildInput('earnMonthly', '', { type: 'number', min: 0, max: 1000000, InputProps: { startAdornment: <InputAdornment position="start">R</InputAdornment> } }),
+    },
+    {
+      id: 'soleBreadwinner',
+      title: `Are you the sole breadwinner?`,
+      example: 'Yes',
+      markup: buildSelect('soleBreadwinner', '', ["No", "Yes"]),
+    },
+    {
+      id: 'soleRentPayer',
+      title: `Do you pay rent alone?`,
+      example: 'Yes',
+      markup: buildSelect('soleRentPayer', '', ["No", "Yes"]),
+    },   
+    {
+      id: 'healthProblems',
+      title: `Do you have chronic or severe health problems?`,
+      example: 'No',
+      markup: buildSelect('healthProblems', 'Do you have health problems?', ["No", "Yes"]),
+    },
+    {
+      id: 'healthProblemsList',
+      title: `List all health problems:`,
+      markup: <List id="healthProblemsList" label="Type a health problem here" />,
+    },      
+    {
+      id: 'disability',
+      title: `Do you have one or more disabilities?`,
+      example: 'No',
+      markup: buildSelect('disability', 'Do you have disabilities?', ["No", "Yes"]),
+    },
+    {
+      id: 'disabilityList',
+      title: `List all disabilities:`,
+      markup: <List id="disabilityList" label="Type a disability here" />,
+    },      
+    {
+      id: 'phone',
+      title: `What is your phone number?`,
+      example: '0847257112',
+      markup: buildInput('phone', 'What is your phone number?'),
+    },
+  ];
+
+  const modifyList = list => {
+    let tempList = list;
+
+    if (person.citizen !== 'No') {
+      tempList = tempList.filter(({ id }) => id !== 'immigrationStatus');
+    }
+
+    if (person.citizen !== 'Yes') {
+      tempList = tempList.filter(({ id }) => id !== 'idNumber');
+    }
+
+    if (person.citizen !== 'Yes' || person.immigrationStatus !== 'Refugee status') {
+      tempList = tempList.filter(({ id }) => id !== 'refugeeId');
+    }
+
+    
+    if (person.employed !== 'Yes') {
+      tempList = tempList.filter(({ id }) => id !== 'employedDate');
+      tempList = tempList.filter(({ id }) => id !== 'employedType');
+    }
+
+    if (person.healthProblems !== 'Yes') {
+      tempList = tempList.filter(({ id }) => id !== 'healthProblemsList');
+    }
+
+    if (person.disabilities !== 'Yes') {
+      tempList = tempList.filter(({ id }) => id !== 'disabilityList');
+    }
+
+    return tempList;
+  }
+
+  const modifiedQuestions = modifyList(questions);
+
+  if (currentStep === modifiedQuestions.length) {
+    return (
+      <BasicPage 
+        modalProps={notification}
+        actions={actions(changeStep, currentStep, modifiedQuestions)}
+        
+        back="/affidavits"
+        expanded="Affidavit"
+        selected="Affidavit Overview"
+        swipeRight={() => currentStep > 0 && changeStep(false)}
+      >
+        <Typography component="p" color="primary">
+          {completed}% completed
+        </Typography>
+        <LinearProgress variant="determinate" value={completed} />
+
+          <TransitionGroup style={{ position: 'relative' }} className={reverse ? 'reverse' : ''}>
+            <CSSTransition
+              key={currentStep}
+              timeout={400}
+              classNames="swipe"
+              className="swipe"
+              key={currentStep}
+            >
+            
+              <Card style={{ margin: '2rem 0' }}>
+                <CardContent>
+                <Typography color="primary" style={{ fontSize: '1.6rem' }}>
+                  You have reached the end of the questions?
+                </Typography>
+                <Typography component="p" style={{ color: "grey", marginTop: '30px' }} >
+                  Do you want to send them to a lawyer?
+                </Typography>
+                <div>
+                  <Button variant="contained" color="primary" fullWidth size="large" style={{ marginTop: '2rem' }} onClick={() => sendEmail(personId)}>Send answers</Button>
+                </div>
+              </CardContent>
+            </Card>
+          </CSSTransition>
+        </TransitionGroup>
+
+       <div style={{ display: 'flex', position: 'fixed', bottom: 0, left: 0, width: '100%' }}>
+        <Button size="small" onClick={() => changeStep(false)} disabled={currentStep < 1}>
+          <KeyboardArrowLeft />
+        </Button>
+
+        <Typography variant="caption" style={{ flexGrow: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          SWIPE SCREEN
+        </Typography>
+
+        <Button size="small" onClick={() => changeStep()}>
+          <KeyboardArrowRight />
+        </Button>
+      </div>
+      </BasicPage>
     )
   }
 
   return (
     <BasicPage 
       modalProps={notification}
-      actions={actions(() => sendEmail(personId))}
-      heading="Affidavit Overview"
+      actions={actions(changeStep, currentStep, modifiedQuestions)}
       back="/affidavits"
       expanded="Affidavit"
       selected="Affidavit Overview"
+      swipeRight={() => currentStep > 0 && changeStep(false)}
+      swipeLeft={() => currentStep < modifiedQuestions.length && changeStep()}
     >
-        <Typography component="p" color="primary" style={{ marginTop: '2rem' }}>
+        <Typography component="p" color="primary">
           {completed}% completed
         </Typography>
-        <LinearProgress variant="determinate" value={completed} style={{ marginBottom: '2rem' }} />
+        <LinearProgress variant="determinate" value={completed} />
 
-        <Typography component="p" style={{ textAlign: 'center' }}>
-          Please fill in the following to the best of your ability:
+        <TransitionGroup style={{ position: 'relative' }} className={reverse ? 'reverse' : ''}>
+          <CSSTransition
+            key={currentStep}
+            timeout={400}
+            classNames="swipe"
+            className="swipe"
+            key={currentStep}
+          >
+            <Card style={{ margin: '2rem 0' }}>
+              <CardContent>
+              <Typography color="primary" style={{ fontSize: '1.6rem' }}>
+              {modifiedQuestions[currentStep].title}
+              </Typography>
+              {
+                modifiedQuestions[currentStep].example &&
+                  (
+                    <Typography component="p" style={{ color: "grey", marginTop: '30px' }} >
+                      For example: "{modifiedQuestions[currentStep].example}"
+                    </Typography>
+                  )
+              }
+              {modifiedQuestions[currentStep].markup}
+            </CardContent>
+          </Card>
+        </CSSTransition>
+      </TransitionGroup>
+
+       <div style={{ display: 'flex', position: 'fixed', bottom: 0, left: 0, width: '100%' }}>
+        <Button size="small" onClick={() => changeStep(false)} disabled={currentStep < 1}>
+          <KeyboardArrowLeft />
+        </Button>
+
+        <Typography variant="caption" style={{ flexGrow: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          SWIPE SCREEN
         </Typography>
 
-        <form>
-          {buildInput('firstName', 'First Name')}
-          {buildInput('lastName', 'Last Name')}
-          {buildSelect('gender', 'Gender', ['Male', 'Female', 'Other'])}
-          {buildInput('age', 'Age', { type: 'number', min: 18, max: 120 })}
-          {buildSelect('married', 'Are you married?', ['No', 'Yes'])}
-          {buildSelect('speakingEnglish', 'How well do you speak English?', ['Excellent', 'Okay', 'Poor'])}
-          {buildSelect('readingEnglish', 'How well do you read English?', ['Excellent', 'Okay', 'Poor'])}
-          {buildSelect('writingEnglish', 'How well do you write English?', ['Excellent', 'Okay', 'Poor'])}
-          {buildSelect('preferedLanguage', 'Prefered language', ["Afrikaans", "Southern Sotho", "Tsonga", "English", "Tswana", "Swati", "Zulu", "Northern Sotho", "Ndebele", "Xhosa", "Venda"])}
-          {buildSelect('citizen', 'Are you South African citizen?', ["No", "Yes"])}
-          {person.citizen === 'Yes' && buildInput('idNumber', 'South African Id Number', { type: 'number', max: 9999999999 })}
-          {person.citizen === 'No' && buildInput('immigrationStatus', 'Your immigration status?', ["Refugee status", "Asylumn seeker permit", 'Undocumented/expired permit'])}
-          {person.immigrationStatus === 'Refugee status' && buildInput('refugeeId', 'Refugee Id Number', { type: 'number', max: 9999999999 })}
-          {buildSelect('employed', 'Are you currently employed?', ["No", "Yes"])}
-          {person.employed === 'Yes' && buildEmployDate()}
-          {person.employed === 'Yes' && buildInput('employedType', 'What do you do for work')}
-          {buildInput('earnMonthly', 'How much earned a month?', { type: 'number', min: 0, max: 1000000, InputProps: { startAdornment: <InputAdornment position="start">R</InputAdornment> } })}
-          {buildSelect('soleBreadwinner', 'Are you the sole breadwinner?', ["No", "Yes"])}
-          {buildSelect('soleRentPayer', 'Do you pay rent alone?', ["No", "Yes"])}
-          {buildSelect('healthProblems', 'Do you have health problems?', ["No", "Yes"])}
-          {person.healthProblems === 'Yes' && <List id="healthProblemsList" label="Type a health problem here" />}
-          {buildSelect('disability', 'Do you have disabilities?', ["No", "Yes"])}
-          {person.disability === 'Yes' && <List id="disabilityList" label="Type a disability here" />}
-          {buildInput('phone', 'What is your phone number?')}
-        </form>
+        <Button size="small" onClick={() => changeStep()}>
+          <KeyboardArrowRight />
+        </Button>
+      </div>
+
     </BasicPage>
   )
 }

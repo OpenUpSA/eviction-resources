@@ -507,20 +507,9 @@ function Occupants({ setView, people, active, affidavits }) {
         </div>
 
         <br />
-        <div style={{ margin: '0.5rem 0' }}>
-          <Button variant="raised" onClick={() => () => console.log('asdasd')}>
-            Add another occupant
-          </Button>
-        </div>
+
       </div>
 
-      <div style={{ padding: '2rem 2rem 6rem' }}>
-        <div style={{ margin: '0.5rem 0' }}>
-          <Button variant="contained"  color="primary" onClick={(() => console.log('asdasd'))}>
-            Proceed next step
-          </Button>
-        </div>
-      </div>
     </div>
   );
 }
