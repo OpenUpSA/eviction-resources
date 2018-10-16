@@ -1,10 +1,10 @@
-import React from 'react';
-import { Provider } from 'react-redux';
-import { renderToString } from 'react-dom/server';
-import { JssProvider } from 'react-jss';
+const React = require('react');
+const { Provider } = require('react-redux');
+const { renderToString } = require('react-dom/server');
+const { JssProvider } = require('react-jss');
 
-import store from './src/redux/store';
-import getPageContext from './src/material-ui/getPageContext';
+const store = require('./src/redux/store');
+const getPageContext = require('./src/material-ui/getPageContext');
 
 
 exports.replaceRenderer = ({ bodyComponent, replaceBodyHTMLString, setHeadComponents  }) => {
