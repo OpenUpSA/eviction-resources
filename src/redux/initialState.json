@@ -1,8 +1,10 @@
 {
-  "active": {
-    "affidavit": null,
-    "person": null
+  "user": {
+    "language": "en",
+    "currentProgressObject": {}
   },
   "affidavits": {},
-  "people": {}
+  "people": {},
+  "properties": {},
+  "lawyers": {}
 }

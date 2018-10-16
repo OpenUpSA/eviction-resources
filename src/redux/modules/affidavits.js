@@ -2,9 +2,11 @@ import { omit } from 'lodash';
 
 
 const DELETE = 'affidavits/DELETE';
-const CREATE = 'affidavits/CREATE'
-const LINK_PERSON = 'affidavits/LINK_PERSON'
-const SET_REPRESENTATIVE = 'affidavits/SET_REPRESENTATIVE'
+const CREATE = 'affidavits/CREATE';
+const LINK_PERSON = 'affidavits/LINK_PERSON';
+const LINK_PROPERTY = 'affidavits/LINK_PROPERTY';
+const LINK_LAWYER = 'affidavits/LINK_LAWYER';
+const SET_REPRESENTATIVE = 'affidavits/SET_REPRESENTATIVE';
 
 
 export default function reducer(state = {}, action = {}) {
@@ -15,22 +17,38 @@ export default function reducer(state = {}, action = {}) {
 
     case LINK_PERSON: return {
       ...state,
-      [action.payload.affidavitId] : {
+      [action.payload.affidavitId]: {
         ...state[action.payload.affidavitId],
         people: [
           ...state[action.payload.affidavitId].people,
           action.payload.personId,
-        ]
-      }
-    }
+        ],
+      },
+    };
+
+    case LINK_PROPERTY: return {
+      ...state,
+      [action.payload.affidavitId]: {
+        ...state[action.payload.affidavitId],
+        property: action.payload.propertyId,
+      },
+    };
+
+    case LINK_LAWYER: return {
+      ...state,
+      [action.payload.affidavitId]: {
+        ...state[action.payload.affidavitId],
+        lawyer: action.payload.lawyerId,
+      },
+    };
 
     case SET_REPRESENTATIVE: return {
       ...state,
-      [action.payload.affidavitId] : {
+      [action.payload.affidavitId]: {
         ...state[action.payload.affidavitId],
         representative: action.payload.personId,
-      }
-    }
+      },
+    };
 
     case CREATE: return {
       ...state,
@@ -68,6 +86,28 @@ export function linkPersonToAffidavit(affidavitId, personId) {
     payload: {
       affidavitId,
       personId,
+    },
+  };
+}
+
+
+export function linkPropertyToAffidavit(affidavitId, propertyId) {
+  return {
+    type: LINK_PROPERTY,
+    payload: {
+      affidavitId,
+      propertyId,
+    },
+  };
+}
+
+
+export function linkLawyerToAffidavit(affidavitId, lawyerId) {
+  return {
+    type: LINK_LAWYER,
+    payload: {
+      affidavitId,
+      lawyerId,
     },
   };
 }

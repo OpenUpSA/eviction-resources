@@ -1,12 +1,11 @@
 import React, { Component, Children } from 'react';
 import Typography from '@material-ui/core/Typography';
 import PageTransition from 'gatsby-plugin-page-transitions';
-import Swipeable from 'react-swipeable'
-import Card from '@material-ui/core/Card'
+import Swipeable from 'react-swipeable';
 
-import Header from './../Header';
-import Menu from './../Menu';
-import Modal from './../Modal';
+import Header from '../Header';
+import Menu from '../Menu';
+import Modal from '../Modal';
 
 /**
  * Control state of landing page/splash screen. Add loading animation to 'Get started' button if
@@ -18,23 +17,23 @@ class BasicPage extends Component {
 
     this.state = {
       menu: false,
-    }
+    };
 
     this.events = {
       setMenu: this.setMenu.bind(this),
-    }
+    };
   }
 
   setMenu(value) {
     if (value === false) {
-      return this.setState({ menu: false })    
+      return this.setState({ menu: false });
     }
 
-    return this.setState({ menu: true })
+    return this.setState({ menu: true });
   }
 
   render() {
-    const { loading, menu } = this.state
+    const { loading, menu } = this.state;
     const { setMenu } = this.events;
     const {
       modalProps,
@@ -51,8 +50,8 @@ class BasicPage extends Component {
     } = this.props;
 
     return (
-      <Markup 
-        {...{ 
+      <Markup
+        {...{
           loading,
           title,
           back,
@@ -67,9 +66,9 @@ class BasicPage extends Component {
           modalProps,
           swipeLeft,
           swipeRight,
-        }} 
+        }}
       />
-    )
+    );
   }
 }
 
@@ -83,11 +82,10 @@ class BasicPage extends Component {
  * contains text and input fields.
  */
 function Markup(props) {
-  const { 
-    title, 
-    back, 
-    children, 
-    actions,
+  const {
+    title,
+    back,
+    children,
     heading,
     progress,
     menu,
@@ -105,7 +103,7 @@ function Markup(props) {
         {heading}
       </Typography>
     </div>
-  )
+  );
 
   const buildProgressMarkup = (progress) => (
     <div>
@@ -125,24 +123,30 @@ function Markup(props) {
     display: 'flex',
     flexDirection: 'column',
     minHeight: '100vh',
-    maxWidth: '700px',
-    margin: '0 auto',
-  }
+  };
 
   const mainStyle = {
     display: 'flex',
-    flexDirection: 'column', 
+    flexDirection: 'column',
     flexGrow: 1,
     padding: '2rem',
     position: 'relative',
-  }
+    width: '100%',
+    maxWidth: '600px',
+    margin: '0 auto',
+  };
 
   return (
     <Swipeable onSwipedLeft={swipeLeft} onSwipedRight={swipeRight} style={rootStyle}>
       <Modal {...modalProps} />
-      <Menu {...{ expanded, selected }} open={menu} onClose={() => setMenu(false)} onOpen={() => setMenu(true)}/>
+      <Menu
+        {...{ expanded, selected }}
+        open={menu}
+        onClose={() => setMenu(false)}
+        onOpen={() => setMenu(true)}
+      />
       <Header {...{ title, back, setMenu }} />
-      <main style={mainStyle}>    
+      <main style={mainStyle}>
         {progress && buildProgressMarkup(progress)}
         <PageTransition>
           <div>
@@ -152,7 +156,7 @@ function Markup(props) {
         </PageTransition>
       </main>
     </Swipeable>
-  )
+  );
 }
 
 

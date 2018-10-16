@@ -1,6 +1,6 @@
 import React from 'react';
-import Link from 'gatsby-link'
-import Helmet from 'react-helmet'
+import Link from 'gatsby-link';
+import Helmet from 'react-helmet';
 
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -20,7 +20,7 @@ const buildBackButton = (back) => {
     return null;
   }
 
-  const button = (   
+  const button = (
     <IconButton color="inherit" aria-label="Menu">
       <ArrowBackIcon />
     </IconButton>
@@ -31,17 +31,16 @@ const buildBackButton = (back) => {
   }
 
   return <Link to={back} style={{ color: 'white' }}>{button}</Link>;
-}
+};
 
 
 const titleStyle = {
   width: '100%',
-  textTransform: 'uppercase', 
+  textTransform: 'uppercase',
   fontSize: '0.75rem',
   textAlign: 'center',
-  textTransform: 'uppercase',
   letterSpacing: '0.15px',
-}
+};
 
 
 /**
@@ -70,7 +69,7 @@ function Header({ back, title, setMenu }) {
         </IconButton>
       </Toolbar>
     </AppBar>
-  )
+  );
 }
 
 

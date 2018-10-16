@@ -9,8 +9,19 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import Link from 'gatsby-link';
 
 
-const monthNames = ["January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December"
+const monthNames = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
 ];
 
 
@@ -18,9 +29,19 @@ const actionItem = (title, cb) => (
   <Button size="small" color="primary" onClick={cb}>
     {title}
   </Button>
-)
+);
 
-function AffidavitPreview({ name, occupants, date, completed = 0, deleteCb, sendCb, id }) {
+function AffidavitPreview(props) {
+  const {
+    name,
+    occupants,
+    created,
+    completed = 0,
+    deleteCb,
+    sendCb,
+    editUrl,
+  } = props;
+
   return (
     <Card>
       <CardContent>
@@ -32,16 +53,17 @@ function AffidavitPreview({ name, occupants, date, completed = 0, deleteCb, send
           Total of {occupants} occupant{occupants > 1 && 's'}
         </Typography>
         <Typography component="p" color="textSecondary">
-          Created on {date.getDate()} {monthNames[date.getMonth()]} {date.getFullYear()}
+          Created on {created.getDate()} {monthNames[created.getMonth()]} {created.getFullYear()}
         </Typography>
 
         <Typography component="p" color="primary" style={{ marginTop: '2rem' }}>
-          {completed}% completed
+          {completed}
+          <span>% completed</span>
         </Typography>
         <LinearProgress variant="determinate" value={completed} />
       </CardContent>
       <CardActions>
-        <Link to={`/edit?id=${id}`} style={{ textDecoration: 'none' }}>
+        <Link to={editUrl} style={{ textDecoration: 'none' }}>
           <Button size="small" color="primary">
             Edit
           </Button>
@@ -50,7 +72,7 @@ function AffidavitPreview({ name, occupants, date, completed = 0, deleteCb, send
         {sendCb && actionItem('Send', sendCb)}
       </CardActions>
     </Card>
-  )
+  );
 }
 
 

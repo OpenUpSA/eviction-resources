@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
+import { calcIfLoadingOverride } from './helpers';
+
 
 class AnimateButton extends Component {
   constructor(...props) {
@@ -21,10 +23,13 @@ class AnimateButton extends Component {
   }
 
   render() {
-    const { loading } = this.state;
+    const { loading: loadingFromState } = this.state;
     const { startLoading } = this.events;
-    const props = { ...this.props, loading, startLoading };
-    return <Markup {...props} />
+    const { forceLoading, ...otherProps } = this.props;
+    const loading = calcIfLoadingOverride(loadingFromState, forceLoading)
+
+    const passedProps = { ...otherProps, loading, startLoading };
+    return <Markup {...passedProps} />
   }
 }
 

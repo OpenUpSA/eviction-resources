@@ -1,17 +1,18 @@
 .swipe {
-  transition: left 0.4s, opacity 0.2s;
-  position: absolute;
+  transition: left 0.4s, transform 0.4s, opacity 0.4s;
   width: 100%;
+  top: 0;
+  position: absolute;
 }
 
 .swipe-enter {
-  left: 100%;
   opacity: 0;
+  left: 100vw;
 }
 
 .swipe-enter-active {
- left: 0;
- opacity: 1;
+  opacity: 1;
+  left: 0;
 }
 
 .swipe-exit {
@@ -20,19 +21,19 @@
 }
 
 .swipe-exit-active {
-  left: -100%;
+  left: -100vw;
   opacity: 0;
 }
 
 
 .reverse .swipe-enter {
-  left: -100%;
   opacity: 0;
+  left: -100vw;
 }
 
 .reverse .swipe-enter-active {
-  left: 0;
   opacity: 1;
+  left: 0;
  }
 
 .reverse .swipe-exit {
@@ -41,7 +42,10 @@
 }
 
 .reverse .swipe-exit-active {
-  left: 100%;
+  left: 100vw;
   opacity: 0;
 }
 
+.swipe-enter-done {
+  position: static;
+}

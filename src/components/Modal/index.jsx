@@ -8,7 +8,7 @@ import { Typography } from '@material-ui/core';
 
 
 
-function Modal({ open, title, close, approve, reject, description }) {
+function Modal({ open, title, close, markup, approve, reject, description }) {
 
   const buildReject = () => {
     if (typeof reject.click === 'function') {
@@ -59,6 +59,7 @@ function Modal({ open, title, close, approve, reject, description }) {
           <Typography component="p">
             {description}
           </Typography>
+          {markup}
         </DialogContent>
         <DialogActions>
           {reject && buildReject()}

@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 import Link from 'gatsby-link';
-
-import BasicPage from './../components/BasicPage';
 import Typography from '@material-ui/core/Typography';
+
+import BasicPage from '../components/BasicPage';
 import AnimateButton from '../components/AnimateButton';
 import withRoot from '../material-ui/withRoot';
 
@@ -13,67 +13,62 @@ class IndexPage extends Component {
 
     this.state = {
       notification: null,
-    }
+    };
 
     this.events = {
       setNotification: this.setNotification.bind(this),
-    }
+    };
   }
 
   setNotification(notification) {
     if (!notification) {
-      return this.setState({ notification: null })
+      return this.setState({ notification: null });
     }
 
-    return this.setState({ notification })
+    return this.setState({ notification });
   }
 
   render() {
     const { setNotification } = this.events;
     const { notification } = this.state;
-    return <Markup {...{ notification, setNotification }} />
+    return <Markup {...{ notification, setNotification }} />;
   }
 }
 
 
-/**
- * Presentational component that build landing page for the affidavit generator.
- *
- * @param props - React props object.
- */
 function Markup({ notification, setNotification }) {
-const evictionGlossary = {
-  title: 'Eviction',
-  description: 'An order, passed down by a judge or magistrate in a court, that states that you must leave the property you are living in or face physical removal.',
-  open: true,
-  close: () => setNotification(),
-  reject: {
-    text: 'Close',
-    click: () => setNotification(),
-  },
-}
+  const evictionGlossary = {
+    title: 'Eviction',
+    description: 'An order, passed down by a judge or magistrate in a court, that states that you must leave the property you are living in or face physical removal.',
+    open: true,
+    close: () => setNotification(),
+    reject: {
+      text: 'Close',
+      click: () => setNotification(),
+    },
+  };
 
-const lawyerGlossary = {
-  title: 'Lawyer',
-  description: 'A person who practices law and can help you to effectively fight your case in court in front of a judge or magistrate.',
-  open: true,
-  close: () => setNotification(),
-  reject: {
-    text: 'Close',
-    click: () => setNotification(),
-  },
-}
+  const lawyerGlossary = {
+    title: 'Lawyer',
+    description: 'A person who practices law and can help you to effectively fight your case in court in front of a judge or magistrate.',
+    open: true,
+    close: () => setNotification(),
+    reject: {
+      text: 'Close',
+      click: () => setNotification(),
+    },
+  };
 
-const consultationGlossary = {
-  title: 'Glossary',
-  description: 'A meeting with an expert (in this case a lawyer) in which the details of your case are discussed, in order to seek good advice.',
-  open: true,
-  close: () => setNotification(),
-  reject: {
-    text: 'Close',
-    click: () => setNotification(),
-  },
-}
+  const consultationGlossary = {
+    title: 'Glossary',
+    description: 'A meeting with an expert (in this case a lawyer) in which the details of your case are discussed, in order to seek good advice.',
+    open: true,
+    close: () => setNotification(),
+    reject: {
+      text: 'Close',
+      click: () => setNotification(),
+    },
+  };
 
   return (
     <BasicPage 

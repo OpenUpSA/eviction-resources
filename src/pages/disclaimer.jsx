@@ -2,11 +2,11 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { navigateTo } from 'gatsby-link';
 import Typography from '@material-ui/core/Typography';
-import { addAffidavit as addAffidavitAction} from './../../redux/actions';
+import { addAffidavit as addAffidavitAction} from '../redux/actions';
 
-import BasicPage from './../../components/BasicPage';;
-import withRoot from '../../material-ui/withRoot';
-import AnimateButton from '../../components/AnimateButton';
+import BasicPage from '../components/BasicPage';;
+import withRoot from '../material-ui/withRoot';
+import AnimateButton from '../components/AnimateButton';
 
 
 /**
