@@ -1,7 +1,7 @@
-import React from 'react';
-import { Router } from 'react-router-dom';
-import { Provider } from 'react-redux';
-import store from './src/redux/store';
+const React = require('react');
+const { Router } = require('react-router-dom');
+const { Provider } = require('react-redux');
+const store = require('./src/redux/store');
 
 
 exports.replaceRouterComponent = ({ history }) => {

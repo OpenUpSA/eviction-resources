@@ -1,9 +1,9 @@
 import { omit } from 'lodash';
 
 
-const CREATE = 'people/CREATE';
-const DELETE = 'people/DELETE';
-const CHANGE_ATTRIBUTE = 'people/CHANGE_ATTRIBUTE';
+const CREATE = 'lawyers/CREATE';
+const DELETE = 'lawyers/DELETE';
+const CHANGE_ATTRIBUTE = 'lawyers/CHANGE_ATTRIBUTE';
 
 
 export default function reducer(state = {}, action = {}) {
@@ -30,7 +30,7 @@ export default function reducer(state = {}, action = {}) {
 }
 
 
-export function createPerson(id) {
+export function createLawyer(id) {
   return {
     type: CREATE,
     payload: id,
@@ -38,14 +38,14 @@ export function createPerson(id) {
 }
 
 
-export function deletePerson(id) {
+export function deleteLawyer(id) {
   return {
     type: DELETE,
     payload: id,
   };
 }
 
-export function changePersonAttribute(id, attribute, value) {
+export function changeLawyerAttribute(id, attribute, value) {
   return {
     type: CHANGE_ATTRIBUTE,
     payload: {
