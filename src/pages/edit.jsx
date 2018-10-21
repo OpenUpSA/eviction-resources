@@ -4,19 +4,26 @@ import { connect } from 'react-redux';
 import Typography from '@material-ui/core/Typography';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Link from 'gatsby-link';
+import TextField from '@material-ui/core/TextField';
 
 import { changePersonAttribute as changePersonAttributeAction } from '../redux/modules/people';
 import { changePropertyAttribute as changePropertyAttributeAction } from '../redux/modules/properties';
 import { changeLawyerAttribute as changeLawyerAttributeAction } from '../redux/modules/lawyers';
 import { saveProgress as saveProgressAction } from '../redux/modules/user';
 
+import convertAnswersIntoEmail from '../services/convertAnswersIntoEmail';
 import buildSemanticAffidavitFunc from '../services/buildSemanticAffidavitFunc';
 import withRoot from '../material-ui/withRoot';
 import BasicPage from '../components/BasicPage';
-import { decodeUrlParams } from '../services/helpers/helpers';
+import { decodeUrlParams } from '../services/helpers';
 import CardSlider from '../components/CardSlider';
 import QuestionWrapper from '../components/QuestionWrapper';
 import DirectionButtons from '../components/DirectionButtons';
+
+
+const convertToInternationalNumber = (number) => {
+  return number.replace(/^0/, '27');
+};
 
 
 class EditPage extends Component {
@@ -26,11 +33,13 @@ class EditPage extends Component {
     this.state = {
       affidavitId: null,
       error: false,
+      notification: null,
     };
 
     this.events = {
       changeStep: this.changeStep.bind(this),
-      createSemanticObject: this.createSemanticObject.bind(this),
+      createSemanticAffidavit: this.createSemanticAffidavit.bind(this),
+      sendEmail: this.sendEmail.bind(this),
     };
   }
 
@@ -54,7 +63,7 @@ class EditPage extends Component {
   }
 
 
-  createSemanticObject() {
+  createSemanticAffidavit() {
     const { affidavitId } = this.state;
 
     const propsExtract = [
@@ -78,6 +87,80 @@ class EditPage extends Component {
   }
 
 
+  sendEmail(id) {
+    const { createSemanticAffidavit } = this.events;
+    const { questions, meta } = createSemanticAffidavit()(id);
+    const { completed } = meta;
+
+    const sendMessage = (number) => {
+      const emailBody = encodeURIComponent(convertAnswersIntoEmail(questions));
+      const messageUrl = `https://api.whatsapp.com/send?phone=${convertToInternationalNumber(number)}&text=${emailBody}`;
+      window.open(messageUrl, '_blank');
+      return this.setState({ notification: null });
+    };
+
+    const enterPhoneNo = (number) => {
+      const newAddition = number.charAt(number.length - 1);
+
+      const calcIfValid = () => (
+        number.length <= 10
+        && (
+          number.length < 1
+          || !Number.isNaN(parseInt(newAddition, 10))
+        )
+      );
+
+      return {
+        title: 'Whatsapp Number',
+        description: 'Please provide the Whatsapp number supplied by your lawyer. For example \'0748152311\'',
+        open: true,
+        markup: (
+          <TextField
+            onChange={event => calcIfValid() && this.setState({
+              notification: enterPhoneNo(event.target.value),
+            })}
+            margin="normal"
+            autoFocus
+            fullWidth
+            value={number || ''}
+            type="number"
+          />
+        ),
+        close: () => this.setState({ notification: null }),
+        reject: {
+          text: 'Cancel',
+          click: () => this.setState({ notification: null }),
+        },
+        approve: {
+          text: 'Send as Whatsapp',
+          click: () => sendMessage(number),
+        },
+      };
+    };
+
+    const incomplete = {
+      title: 'Missing content',
+      description: 'The affidavit has not been completed, do you want to send in its current state?',
+      open: true,
+      close: () => this.setState({ notification: null }),
+      reject: {
+        text: 'Cancel',
+        click: () => this.setState({ notification: null }),
+      },
+      approve: {
+        text: 'Continue',
+        click: () => this.setState({ notification: enterPhoneNo('') }),
+      },
+    };
+
+    if (completed === 100) {
+      return this.setState({ notification: enterPhoneNo('') });
+    }
+
+    return this.setState({ notification: incomplete });
+  }
+
+
   changeStep(value) {
     const { saveProgress, currentProgressObject } = this.props;
     const { affidavitId } = this.state;
@@ -92,8 +175,8 @@ class EditPage extends Component {
 
   render() {
     const propsExtract = ['currentProgressObject'];
-    const stateExtract = ['error', 'affidavitId'];
-    const eventsExtract = ['changeStep', 'createSemanticObject'];
+    const stateExtract = ['error', 'affidavitId', 'notification'];
+    const eventsExtract = ['changeStep', 'createSemanticAffidavit', 'sendEmail'];
 
     const passedProps = {
       ...pick(this.props, propsExtract),
@@ -107,8 +190,8 @@ class EditPage extends Component {
 
 function Markup(props) {
   const { currentProgressObject } = props;
-  const { error, affidavitId } = props;
-  const { changeStep, createSemanticObject } = props;
+  const { error, affidavitId, notification } = props;
+  const { changeStep, createSemanticAffidavit, sendEmail } = props;
 
   if (error) {
     return (
@@ -138,7 +221,7 @@ function Markup(props) {
   }
 
   const step = currentProgressObject[affidavitId];
-  const { questions, meta } = createSemanticObject()(affidavitId);
+  const { questions, meta } = createSemanticAffidavit()(affidavitId);
 
   const {
     completed,
@@ -149,17 +232,17 @@ function Markup(props) {
     questions,
     (questionObject) => {
       const {
-        reference,
         referenceId,
         id: questionId,
-        ...otherProps
       } = questionObject;
+
+      const sendMessage = () => sendEmail(affidavitId);
 
       return (
         <QuestionWrapper
           name={`${referenceId}-${questionId}`}
           proceed={changeStep}
-          {...otherProps}
+          {...{ ...questionObject, sendMessage }}
         />
       );
     },
@@ -171,6 +254,7 @@ function Markup(props) {
       selected="Create an affidavit"
       swipeRight={() => step > 0 && changeStep(false)}
       swipeLeft={() => step + 1 < validQuestions.length && changeStep()}
+      modalProps={notification}
     >
       <Typography component="p" color="primary" style={{ marginBottom: '0.5rem' }}>
         {`${completed}% completed`}
@@ -180,7 +264,7 @@ function Markup(props) {
       <CardSlider markupObject={questionsMarkup} selected={step} />
       <DirectionButtons
         current={step + 1}
-        total={validQuestions.length}
+        total={validQuestions}
         leftClickCb={() => changeStep(false)}
         RightClickCb={() => changeStep()}
       />
@@ -193,8 +277,8 @@ const mapStateToProps = (state, ownProps) => ({
   ...ownProps,
   affidavits: state.affidavits,
   people: state.people,
-  property: state.property,
-  laywers: state.lawyers,
+  properties: state.properties,
+  lawyers: state.lawyers,
   userLanguage: state.user.language,
   currentProgressObject: state.user.currentProgressObject,
 });

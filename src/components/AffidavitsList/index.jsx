@@ -11,7 +11,6 @@ import './styles.css';
 function AffidavitsList(props) {
   const {
     affidavits,
-    itemClickCallback,
     deleteCb: deleteCbRaw,
     sendCb: sendCbRaw,
     createObj,

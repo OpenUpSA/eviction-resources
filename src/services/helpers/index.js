@@ -5,6 +5,7 @@ function createArrayOfNumbers(props) {
     increment = 1,
     prefix = '',
     affix = '',
+    reverse,
   } = props;
 
   const result = [];
@@ -12,7 +13,13 @@ function createArrayOfNumbers(props) {
 
   for (let i = 0; i < times; i += 1) {
     result.push(prefix + value + affix);
-    value += increment;
+
+    if (reverse) {
+      value -= increment;
+    } else {
+      value += increment;
+    }
+
   }
 
   return result;

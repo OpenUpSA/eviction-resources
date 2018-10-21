@@ -7,6 +7,7 @@ const LINK_PERSON = 'affidavits/LINK_PERSON';
 const LINK_PROPERTY = 'affidavits/LINK_PROPERTY';
 const LINK_LAWYER = 'affidavits/LINK_LAWYER';
 const SET_REPRESENTATIVE = 'affidavits/SET_REPRESENTATIVE';
+const UNLINK_PERSON = 'affidavits/UNLINK_PERSON';
 
 
 export default function reducer(state = {}, action = {}) {
@@ -23,6 +24,14 @@ export default function reducer(state = {}, action = {}) {
           ...state[action.payload.affidavitId].people,
           action.payload.personId,
         ],
+      },
+    };
+
+    case UNLINK_PERSON: return {
+      ...state,
+      [action.payload.id]: {
+        ...state[action.payload.id],
+        people: state[action.payload.id].people.filter(id => action.payload.personId !== id),
       },
     };
 
@@ -85,6 +94,16 @@ export function linkPersonToAffidavit(affidavitId, personId) {
     type: LINK_PERSON,
     payload: {
       affidavitId,
+      personId,
+    },
+  };
+}
+
+export function unlinkPerson(id, personId) {
+  return {
+    type: UNLINK_PERSON,
+    payload: {
+      id,
       personId,
     },
   };

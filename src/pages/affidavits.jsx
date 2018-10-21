@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Link from 'gatsby-link';
 import { pick } from 'lodash';
+import TextField from '@material-ui/core/TextField';
 
 import { addAffidavit as addAffidavitAction } from '../redux/actions';
 import { destroyAffidavit } from '../redux/modules/affidavits';
@@ -10,6 +11,13 @@ import withRoot from '../material-ui/withRoot';
 import AnimateButton from '../components/AnimateButton';
 import BasicPage from '../components/BasicPage';
 import buildSemanticAffidavitFunc from '../services/buildSemanticAffidavitFunc';
+import convertAnswersIntoEmail from '../services/convertAnswersIntoEmail';
+
+
+const convertToInternationalNumber = (number) => {
+  return number.replace(/^0/, '27');
+};
+
 
 class AffidavitsPage extends Component {
   constructor(...props) {
@@ -20,18 +28,27 @@ class AffidavitsPage extends Component {
       loading: true,
     };
 
+    this.values = {
+      whatsappInputNode: null,
+    };
+
     this.events = {
       deletePrompt: this.deletePrompt.bind(this),
       sendEmail: this.sendEmail.bind(this),
-      createSemanticAffidavit: buildSemanticAffidavitFunc(this.props),
       createSemanticObject: this.createSemanticObject.bind(this),
+      updateWhatsappNode: this.updateWhatsappNode.bind(this),
     };
   }
+
 
   componentDidMount() {
     return this.setState({ loading: false });
   }
 
+
+  updateWhatsappNode(node) {
+    this.values.whatsappInputNode = node;
+  }
 
   createSemanticObject() {
     const { loading } = this.state;
@@ -58,34 +75,76 @@ class AffidavitsPage extends Component {
 
 
   sendEmail(id) {
-    const { createSemanticAffidavit } = this.events;
-    const { meta } = createSemanticAffidavit(id);
-    const { name, completed } = meta;
-    // const emailBody = encodeURIComponent(convertAnswersIntoEmail(questions))
-    const emailBody = 'asdasd';
+    const { createSemanticObject } = this.events;
+    const { meta, questions } = createSemanticObject()(id);
+    const { completed } = meta;
 
-    const emailUrl = `mailto:shaun@nu.org.za?subject=Eviction%20Affidavit%3A%20${name}&body=${emailBody}`;
+    const sendMessage = (number) => {
+      const emailBody = encodeURIComponent(convertAnswersIntoEmail(questions));
+      const messageUrl = `https://api.whatsapp.com/send?phone=${convertToInternationalNumber(number)}&text=${emailBody}`;
+      window.open(messageUrl, '_blank');
+      return this.setState({ notification: null });
+    };
 
-    if (completed === 100) {
-      return window.open(emailUrl, '_blank');
-    }
+    const enterPhoneNo = (number) => {
+      const newAddition = number.charAt(number.length - 1);
 
-    return this.setState({
-      notification: {
-        title: 'Missing content',
-        description: 'The affidavit has not been completed, do you want to send in its current state?',
+      const calcIfValid = () => (
+        number.length <= 10
+        && (
+          number.length < 1
+          || !Number.isNaN(parseInt(newAddition, 10))
+        )
+      );
+
+      return {
+        title: 'Whatsapp Number',
+        description: 'Please provide the Whatsapp number supplied by your lawyer. For example \'0748152311\'',
         open: true,
+        markup: (
+          <TextField
+            onChange={event => calcIfValid() && this.setState({
+              notification: enterPhoneNo(event.target.value),
+            })}
+            margin="normal"
+            autoFocus
+            fullWidth
+            value={number || ''}
+            type="number"
+          />
+        ),
         close: () => this.setState({ notification: null }),
         reject: {
           text: 'Cancel',
           click: () => this.setState({ notification: null }),
         },
         approve: {
-          text: 'Send',
-          click: emailUrl,
+          text: 'Send as Whatsapp',
+          click: () => sendMessage(number),
         },
+      };
+    };
+
+    const incomplete = {
+      title: 'Missing content',
+      description: 'The affidavit has not been completed, do you want to send in its current state?',
+      open: true,
+      close: () => this.setState({ notification: null }),
+      reject: {
+        text: 'Cancel',
+        click: () => this.setState({ notification: null }),
       },
-    });
+      approve: {
+        text: 'Continue',
+        click: () => this.setState({ notification: enterPhoneNo('') }),
+      },
+    };
+
+    if (completed === 100) {
+      return this.setState({ notification: enterPhoneNo('') });
+    }
+
+    return this.setState({ notification: incomplete });
   }
 
 
@@ -184,8 +243,8 @@ const mapStateToProps = (state, ownProps) => ({
   ...ownProps,
   affidavits: state.affidavits,
   people: state.people,
-  property: state.property,
-  laywers: state.lawyers,
+  properties: state.properties,
+  lawyers: state.lawyers,
   userLanguage: state.user.language,
 });
 

@@ -2,31 +2,36 @@ import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import { pick } from 'lodash';
 
-import ButtonsList from '../ButtonsList';
-import FreeInput from '../FreeInput';
-import Dropdown from '../Dropdown';
+import ButtonsList from './components/ButtonsList';
+import FreeInput from './components/FreeInput';
+import Dropdown from './components/Dropdown';
+import Occupants from './components/Occupants';
+import OccupantsList from './components/OccupantsList';
+import DateSelect from './components/DateSelect';
+import Send from './components/Send';
 
 
 const calcQuestionType = (props) => {
-  const { type, ...otherProps } = props;
+  const { type, sendMessage, ...otherProps } = props;
 
   switch (type) {
     case 'buttons': return <ButtonsList {...otherProps} />;
     case 'string': return <FreeInput {...otherProps} />;
     case 'number': return <FreeInput {...otherProps} type="number" />;
     case 'dropdown': return <Dropdown {...otherProps} />;
-
-    case 'dropdown-other': return <div>dropdown-other</div>;
-    case 'dropdown-multiple-other': return <div>dropdown-multiple-other</div>;
-    case 'month-year': return <div>month-year</div>;
-    case 'day-month-year': return <div>day-month-year</div>;
+    case 'occupants': return <Occupants {...otherProps} />;
+    case 'occupants-list': return <OccupantsList {...otherProps} />;
+    case 'month-year': return <DateSelect {...otherProps} month year />;
+    case 'day-month-year': return <DateSelect {...otherProps} day month year />;
+    case 'send': return <Send {...{ sendMessage }} />;
     default: return null;
   }
 };
 
 
 function QuestionWrapper(props) {
-  const questionProps = pick(props, ['type', 'options', 'answer', 'changeAction', 'proceed']);
+  const questionProps = pick(props, ['type', 'options', 'answer', 'changeAction', 'proceed', 'instances', 'reference', 'referenceId', 'sendMessage']);
+
   const { example, label } = props;
 
   const labelMarkup = (

@@ -69,7 +69,7 @@ function AffidavitPreview(props) {
           </Button>
         </Link>
         {deleteCb && actionItem('Delete', deleteCb)}
-        {sendCb && actionItem('Send', sendCb)}
+        {sendCb && actionItem('Send to lawyer', sendCb)}
       </CardActions>
     </Card>
   );

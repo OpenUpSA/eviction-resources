@@ -97,6 +97,7 @@ function Markup(props) {
     modalProps = { open: false },
   } = props;
 
+
   const headingMarkup = (
     <div style={{ marginBottom: '2rem' }}>
       <Typography variant="display1" component="h1" style={{ textAlign: 'center' }}>

@@ -1,6 +1,6 @@
 import { flatten } from 'lodash';
 
-import { createArrayOfNumbers } from '../helpers/helpers';
+import { createArrayOfNumbers } from '../helpers';
 
 
 const calcPossesive = (name, language = 'en') => {
@@ -34,8 +34,10 @@ const calcPronoun = (gender, language = 'en') => {
 const buildPersonQuestions = (personId, people) => {
   const person = people[personId];
   const pronoun = calcPronoun(person.gender);
-  const { name } = person;
-  const possesiveName = calcPossesive(name);
+  const { firstName } = person;
+  const possesiveName = calcPossesive(firstName);
+
+
 
   const questionsList = [
     {
@@ -82,7 +84,7 @@ const buildPersonQuestions = (personId, people) => {
       id: 'age',
       type: 'dropdown',
       en: {
-        label: `What old is ${name}?`,
+        label: `How old is ${firstName}?`,
         options: createArrayOfNumbers({ start: 18, times: 82 }),
       },
     },
@@ -91,7 +93,7 @@ const buildPersonQuestions = (personId, people) => {
       type: 'buttons',
       condition: person.relationToRep !== 'Spouse',
       en: {
-        label: `Is ${name} married?`,
+        label: `Is ${firstName} married?`,
         options: [
           'No',
           'Yes',
@@ -103,7 +105,7 @@ const buildPersonQuestions = (personId, people) => {
       type: 'buttons',
       condition: person.married === 'Yes',
       en: {
-        label: `Does ${name} support ${pronoun} spouse?`,
+        label: `Does ${firstName} support ${pronoun} spouse?`,
         options: [
           'No',
           'Yes',
@@ -114,7 +116,7 @@ const buildPersonQuestions = (personId, people) => {
       id: 'children',
       type: 'buttons',
       en: {
-        label: `Does ${name} have children?`,
+        label: `Does ${firstName} have children?`,
         options: [
           'No',
           'Yes',
@@ -124,6 +126,7 @@ const buildPersonQuestions = (personId, people) => {
     {
       id: 'childrenLiving',
       type: 'dropdown',
+      condition: person.children === 'Yes',
       en: {
         label: `How many of ${pronoun} children live on the property?`,
         options: createArrayOfNumbers({ start: 0, times: 15 }),
@@ -133,7 +136,7 @@ const buildPersonQuestions = (personId, people) => {
       id: 'citizenship',
       type: 'buttons',
       en: {
-        label: `Is ${name} a citizen of South Africa?`,
+        label: `Is ${firstName} a citizen of South Africa?`,
         options: [
           'No',
           'Yes',
@@ -178,7 +181,7 @@ const buildPersonQuestions = (personId, people) => {
       id: 'healthProblems',
       type: 'buttons',
       en: {
-        label: `Does ${name} have any long term health problems or disabilities?`,
+        label: `Does ${firstName} have any long term health problems or disabilities?`,
         options: [
           'No',
           'Yes',
@@ -188,7 +191,7 @@ const buildPersonQuestions = (personId, people) => {
     // {
     //   id: 'healthProblemsList',
     //   condition: person.healthProblems === 'Yes',
-    //   type: 'dropdown-multiple-other',
+    //   type: 'dropdown-multiple',
     //   en: {
     //     label: 'Please specify a health problem or disability',
     //     options: [
@@ -217,7 +220,7 @@ const buildPersonQuestions = (personId, people) => {
       id: 'employment',
       type: 'buttons',
       en: {
-        label: `Is ${name} currently employed?`,
+        label: `Is ${firstName} currently employed?`,
         options: [
           'No',
           'Yes',
@@ -227,7 +230,7 @@ const buildPersonQuestions = (personId, people) => {
     {
       id: 'workType',
       condition: person.employment === 'Yes',
-      type: 'dropdown-other',
+      type: 'dropdown',
       en: {
         label: `What does ${pronoun} do for work?`,
         options: ['Domestic Worker', 'Care Taker', 'Technician', 'Other'],
@@ -244,7 +247,7 @@ const buildPersonQuestions = (personId, people) => {
     {
       id: 'alternativeIncome',
       condition: person.employment === 'No',
-      type: 'button',
+      type: 'buttons',
       en: {
         label: `Do ${pronoun} have other sources of income?`,
         options: [
@@ -262,22 +265,25 @@ const buildPersonQuestions = (personId, people) => {
           && person.alternativeIncome === 'Yes'
         )
       ),
-      type: 'dropdown-other',
+      type: 'dropdown',
       en: {
         label: `What is ${possesiveName} total income per month?`,
-        options: createArrayOfNumbers({
-          start: 1,
-          times: 25,
-          increment: 500,
-          prefix: 'R',
-        }),
+        options: [
+          ...createArrayOfNumbers({
+            start: 500,
+            times: 25,
+            increment: 500,
+            prefix: 'R',
+          }),
+          'Other',
+        ]
       },
     },
     {
       id: 'school',
-      type: 'button',
+      type: 'buttons',
       en: {
-        label: `Does ${name} go to School?`,
+        label: `Does ${firstName} go to School?`,
         options: [
           'No',
           'Yes',
@@ -299,7 +305,8 @@ const buildPersonQuestions = (personId, people) => {
     },
     {
       id: 'specialNeedsSchool',
-      type: 'button',
+      condition: person.school === 'Yes',
+      type: 'buttons',
       en: {
         label: `Is ${possesiveName} school a special needs school?`,
         options: [
@@ -310,9 +317,9 @@ const buildPersonQuestions = (personId, people) => {
     },
     {
       id: 'cellphone',
-      type: 'button',
+      type: 'buttons',
       en: {
-        label: `Does ${name} have a cellphone?`,
+        label: `Does ${firstName} have a cellphone?`,
         options: [
           'No',
           'Yes',
@@ -330,9 +337,9 @@ const buildPersonQuestions = (personId, people) => {
     },
     {
       id: 'socialInstitutions',
-      type: 'button',
+      type: 'buttons',
       en: {
-        label: `Are there any social institutions in the neighbourhood which ${name} uses regularly?`,
+        label: `Are there any social institutions in the neighbourhood which ${firstName} uses regularly?`,
         options: [
           'No',
           'Yes',
@@ -342,7 +349,7 @@ const buildPersonQuestions = (personId, people) => {
     // {
     //   id: 'healthProblemsList',
     //   condition: person.healthProblems === 'Yes',
-    //   type: 'dropdown-multiple-other',
+    //   type: 'dropdown-multiple',
     //   en: {
     //     label: 'Please specify a social institution',
     //     options: [
@@ -353,6 +360,7 @@ const buildPersonQuestions = (personId, people) => {
     //       'Hospital / Clinic',
     //       'Bank',
     //       'Church',
+    //       'Other,
     //     ],
     //   },
     // },
@@ -360,10 +368,8 @@ const buildPersonQuestions = (personId, people) => {
 
   return questionsList.map(question => ({
     ...question,
-    reference: {
-      type: 'people',
-      id: personId,
-    },
+    reference: 'people',
+    referenceId: personId,
   }));
 };
 
@@ -579,7 +585,7 @@ const representativeQuestions = (representativeId, people) => {
     {
       id: 'alternativeIncome',
       condition: representative.employment === 'No',
-      type: 'button',
+      type: 'buttons',
       en: {
         label: 'Do you have other sources of income?',
         options: [
@@ -602,7 +608,7 @@ const representativeQuestions = (representativeId, people) => {
         label: 'What is your total income per month?',
         options: [
           ...createArrayOfNumbers({
-            start: 1,
+            start: 500,
             times: 25,
             increment: 500,
             prefix: 'R',
@@ -656,7 +662,7 @@ const representativeQuestions = (representativeId, people) => {
     // {
     //   id: 'healthProblemsList',
     //   condition: representative.healthProblems === 'Yes',
-    //   type: 'dropdown-multiple-other',
+    //   type: 'dropdown-multiple',
     //   en: {
     //     label: 'Please specify a health problem or disability',
     //     options: [
@@ -678,6 +684,7 @@ const representativeQuestions = (representativeId, people) => {
     //       'Lung Disease',
     //       'Kidney Disease',
     //       'Schizophrenia',
+    //       'Other,
     //     ],
     //   },
     // },
@@ -689,24 +696,6 @@ const representativeQuestions = (representativeId, people) => {
         label: 'What is your phone number?',
       },
     },
-    {
-      id: 'otherOccupants',
-      type: 'dropdown',
-      en: {
-        label: 'How many other people permanently reside (live) in the place with you?',
-        options: createArrayOfNumbers({ start: 0, times: 20 }),
-      },
-    },
-    {
-      id: 'otherOccupantsNames',
-      condition: representative.otherOccupants > 0,
-      type: 'string-multiple',
-      instances: representative.otherOccupants,
-      en: {
-        label: 'Please list all other occupants by first name:',
-        options: createArrayOfNumbers({ start: 0, times: 20 }),
-      },
-    },
   ];
 
   return questionsList.map(question => ({
@@ -715,6 +704,36 @@ const representativeQuestions = (representativeId, people) => {
     referenceId: representativeId,
   }));
 };
+
+
+const affidavitQuestions = (affidavits, affidavitId) => {
+  const affidavit = affidavits[affidavitId];
+
+  const questionsList = [
+    {
+      id: 'occupants',
+      type: 'occupants',
+      en: {
+        label: 'How many other people permanently reside (live) in the place with you?',
+        options: createArrayOfNumbers({ start: 0, times: 20 }),
+      },
+    },
+    {
+      id: 'occupants-list',
+      condition: affidavit.people.length > 1,
+      type: 'occupants-list',
+      instances: affidavit.people.length,
+      en: {
+        label: 'Please list the first names off all occupants:',
+      },
+    },
+  ];
+
+  return questionsList.map(question => ({
+    ...question,
+    referenceId: affidavitId,
+  }));
+}
 
 
 const propertyQuestions = (propertyId, properties) => {
@@ -747,15 +766,15 @@ const propertyQuestions = (propertyId, properties) => {
     },
     {
       id: 'type',
-      type: 'dropdown-other',
+      type: 'dropdown',
       en: {
         label: 'What type of property is the place in question?',
         options: [
           'Informal structure like a shack or wendy house',
-          'entire house',
-          'entire apartment/flat',
-          'room in a house',
-          'room in an apartment',
+          'Entire house',
+          'Entire apartment/flat',
+          'Room in a house',
+          'Room in an apartment',
         ],
       },
     },
@@ -804,7 +823,7 @@ const propertyQuestions = (propertyId, properties) => {
     {
       id: 'leasePeriod',
       condition: property.fixedLease === 'Yes',
-      type: 'dropdown-other',
+      type: 'dropdown',
       en: {
         label: 'How long was the fixed-period lease for?',
         options: createArrayOfNumbers({
@@ -851,7 +870,7 @@ const propertyQuestions = (propertyId, properties) => {
     {
       id: 'arrearsReason',
       condition: property.arrears === 'Yes',
-      type: 'dropdown-others',
+      type: 'dropdown',
       en: {
         label: 'Why did you stop paying',
         options: [
@@ -866,7 +885,7 @@ const propertyQuestions = (propertyId, properties) => {
     {
       id: 'arrearsAmount',
       condition: property.arrears === 'Yes',
-      type: 'dropdown-other',
+      type: 'dropdown',
       reference: property,
       en: {
         label: 'Roughly how much do you currently owe in arrears?',
@@ -931,29 +950,30 @@ const propertyQuestions = (propertyId, properties) => {
         ],
       },
     },
-    {
-      id: 'landlordProblemsList',
-      condition: property.landlordProblems === 'Yes',
-      type: 'dropdown-multiple-other',
-      en: {
-        label: 'Please specify a problem with your agency/landlord',
-        options: [
-          'Did not refund deposit',
-          'I got an unlawful notice to vacate',
-          'Exorbitant increase in rental',
-          'Did not accept cancellation of my lease',
-          'Failure to provide water, electricity, etc.',
-          'Failure to pay rental or municipal services',
-          'Failure to do maintenance',
-          'Unlawful lockout or eviction',
-          'Secretly changing terms of agreement',
-          'Unlawful entry onto property',
-          'Unlawful seizure of possessions',
-          'Failure to furnish receipts for payment',
-          'Failure to reduce lease to writing',
-        ],
-      },
-    },
+    // {
+    //   id: 'landlordProblemsList',
+    //   condition: property.landlordProblems === 'Yes',
+    //   type: 'dropdown-multiple',
+    //   en: {
+    //     label: 'Please specify a problem with your agency/landlord',
+    //     options: [
+    //       'Did not refund deposit',
+    //       'I got an unlawful notice to vacate',
+    //       'Exorbitant increase in rental',
+    //       'Did not accept cancellation of my lease',
+    //       'Failure to provide water, electricity, etc.',
+    //       'Failure to pay rental or municipal services',
+    //       'Failure to do maintenance',
+    //       'Unlawful lockout or eviction',
+    //       'Secretly changing terms of agreement',
+    //       'Unlawful entry onto property',
+    //       'Unlawful seizure of possessions',
+    //       'Failure to furnish receipts for payment',
+    //       'Failure to reduce lease to writing',
+    //       'Other',
+    //     ],
+    //   },
+    // },
     {
       id: 'housingTribunal',
       type: 'buttons',
@@ -967,6 +987,7 @@ const propertyQuestions = (propertyId, properties) => {
     },
     {
       id: 'housingTribunalOutcome',
+      condition: property.housingTribunal === 'Yes',
       type: 'string',
       en: {
         label: 'What was the outcome?',
@@ -974,7 +995,7 @@ const propertyQuestions = (propertyId, properties) => {
     },
     {
       id: 'leaseCancel',
-      type: 'dropdown-other',
+      type: 'dropdown',
       en: {
         label: 'How did you find out your lease was cancelled (the landlord wanted you to leave)?',
         options: [
@@ -985,6 +1006,7 @@ const propertyQuestions = (propertyId, properties) => {
           'Their lawyer sent you a email',
           'They sent you a text or whatsapp',
           'You received court papers from the Sheriff',
+          'Other',
         ],
       },
     },
@@ -1042,16 +1064,14 @@ const propertyQuestions = (propertyId, properties) => {
 
   return questionsList.map(question => ({
     ...question,
-    reference: {
-      type: 'properties',
-      id: propertyId,
-    },
+    reference: 'properties',
+    referenceId: propertyId,
   }));
 };
 
 
-const legalQuestions = (lawyerId, laywers) => {
-  const lawyer = laywers[lawyerId];
+const legalQuestions = (lawyerId, lawyers) => {
+  const lawyer = lawyers[lawyerId];
 
   const questionsList = [
     {
@@ -1084,7 +1104,7 @@ const legalQuestions = (lawyerId, laywers) => {
     },
     {
       id: 'approachedLawyer',
-      type: 'dropdown-other',
+      type: 'dropdown',
       en: {
         label: 'Where have you gone to look for a lawyer?',
         options: [
@@ -1095,6 +1115,7 @@ const legalQuestions = (lawyerId, laywers) => {
           'UCT Law Clinic',
           'UCT Refugee Law Clinic',
           'A Private Lawyer',
+          'Other',
         ],
       },
     },
@@ -1120,12 +1141,13 @@ const legalQuestions = (lawyerId, laywers) => {
     {
       id: 'approachedProof',
       condition: lawyer.representing === 'Yes',
-      type: 'dropdown-other',
+      type: 'dropdown',
       en: {
         label: 'Do you have proof that you approached them?',
         options: [
           'No',
           'Yes, I have a letter',
+          'Other',
         ],
       },
     },
@@ -1134,7 +1156,7 @@ const legalQuestions = (lawyerId, laywers) => {
       condition: lawyer.representing === 'Yes',
       type: 'buttons',
       en: {
-        label: 'Have they responded to your request for legal representation?',
+        label: 'Did they respond to your request for legal representation?',
         options: [
           'No',
           'Yes',
@@ -1142,7 +1164,7 @@ const legalQuestions = (lawyerId, laywers) => {
       },
     },
     {
-      id: 'approachedResponse',
+      id: 'approachedResponseDetails',
       condition: lawyer.approachedResponse === 'Yes',
       type: 'buttons',
       en: {
@@ -1166,10 +1188,8 @@ const legalQuestions = (lawyerId, laywers) => {
 
   return questionsList.map(question => ({
     ...question,
-    reference: {
-      type: 'lawyers',
-      id: lawyerId,
-    },
+    reference: 'lawyers',
+    referenceId: lawyerId,
   }));
 };
 
@@ -1182,16 +1202,25 @@ function buildQuestions(params) {
     properties,
     lawyerId,
     lawyers,
+    affidavits,
+    affidavitId,
   } = params;
-
 
   const [representative, ...otherOccupants] = peopleIds;
 
   return [
     ...representativeQuestions(representative, people),
-    // ...flatten(otherOccupants.map(id => buildPersonQuestions(id, people))),
-    // ...propertyQuestions(propertyId, properties),
-    // ...legalQuestions(lawyerId, lawyers),
+    ...affidavitQuestions(affidavits, affidavitId),
+    ...flatten(otherOccupants.map(id => buildPersonQuestions(id, people))),
+    ...propertyQuestions(propertyId, properties),
+    ...legalQuestions(lawyerId, lawyers),
+    {
+      id: 'send',
+      type: 'send',
+      en: {
+        label: 'Do you want to send your answers to a lawyer?',
+      },
+    },
   ];
 }
 

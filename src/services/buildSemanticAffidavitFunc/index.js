@@ -19,6 +19,8 @@ const buildSemanticAffidavitFunc = props => (id) => {
   const otherOccupants = affidavit.people.filter(personId => personId !== representative);
 
   const questionParams = {
+    affidavits,
+    affidavitId: id,
     peopleIds: [representative, ...otherOccupants],
     people,
     propertyId,
@@ -34,7 +36,7 @@ const buildSemanticAffidavitFunc = props => (id) => {
     switch (reference) {
       case 'people': return value => changePersonAttribute(questionId, attribute, value);
       case 'properties': return value => changePropertyAttribute(questionId, attribute, value);
-      case 'laywers': return value => changeLawyerAttribute(questionId, attribute, value);
+      case 'lawyers': return value => changeLawyerAttribute(questionId, attribute, value);
       default: return null;
     }
   };
@@ -42,7 +44,7 @@ const buildSemanticAffidavitFunc = props => (id) => {
   const normalisedQuestions = validQuestions.reduce(
     (result, val) => {
       const changeAction = inferActionFromReference(val.reference, val.referenceId, val.id);
-      const answer = props[val.reference][val.referenceId][val.id];
+      const answer = val.reference ? props[val.reference][val.referenceId][val.id] : true;
 
       return {
         ...result,
@@ -51,6 +53,7 @@ const buildSemanticAffidavitFunc = props => (id) => {
           ...pick(val[language], ['label', 'example', 'options']),
           changeAction,
           answer,
+          affidavitId: id,
         },
       };
     },
@@ -62,19 +65,21 @@ const buildSemanticAffidavitFunc = props => (id) => {
 
   const completed = Math.floor(answeredQuestions.length / validQuestions.length * 100);
 
-  const FIRST_NAME = people[affidavits[id].representative].firstName;
-  const LAST_NAME = people[affidavits[id].representative].lastName;
+  const { firstName } = people[affidavits[id].representative];
+  const { lastName } = people[affidavits[id].representative];
+  const hasName = firstName && lastName;
+  const name = hasName ? `${firstName} ${lastName}` : 'Unspecified Representative';
 
   return {
     questions: normalisedQuestions,
     meta: {
       completed,
       questionsArray: questionsArray.length,
-      validQuestions: validQuestions.length,
+      validQuestions: Object.keys(normalisedQuestions).length,
       answeredQuestions: answeredQuestions.length,
-      name: `${FIRST_NAME || 'Unknown Representative'} ${LAST_NAME}`,
       occupants: affidavit.people.length,
       created: new Date(affidavit.created),
+      name,
     },
   };
 };
