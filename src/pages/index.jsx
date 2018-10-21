@@ -90,7 +90,9 @@ function Markup({ notification, setNotification }) {
         <Link to="/affidavits" style={{ textDecoration: 'none' }}>
           <AnimateButton variant="contained" color="primary" fullWidth size="large" text="Get Started" />
         </Link>
-
+        <Link to="/developer" style={{ textDecoration: 'none', position: 'absolute', bottom: 0, width: '100%', left: 0 }}>
+          <AnimateButton color="secondary" fullWidth size="large" text="Developer Options" />
+        </Link>
       </div>
     </BasicPage>
   )
