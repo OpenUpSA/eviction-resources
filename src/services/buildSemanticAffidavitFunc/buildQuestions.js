@@ -84,13 +84,13 @@ const buildPersonQuestions = (personId, people) => {
       type: 'dropdown',
       en: {
         label: `How old is ${firstName}?`,
-        options: createArrayOfNumbers({ start: 18, times: 82 }),
+        options: createArrayOfNumbers({ start: 0, times: 100 }),
       },
     },
     {
       id: 'married',
       type: 'buttons',
-      condition: person.relationToRep !== 'Spouse',
+      condition: person.relationToRep !== 'Husband / Wife',
       en: {
         label: `Is ${firstName} married?`,
         options: [
@@ -187,6 +187,14 @@ const buildPersonQuestions = (personId, people) => {
         ],
       },
     },
+    {
+      id: 'healthProblemsList',
+      condition: person.healthProblems === 'Yes',
+      type: 'string',
+      en: {
+        label: `Can you specify ${pronoun} health problem or disability?`,
+      },
+    },
     // {
     //   id: 'healthProblemsList',
     //   condition: person.healthProblems === 'Yes',
@@ -215,32 +223,34 @@ const buildPersonQuestions = (personId, people) => {
     //     ],
     //   },
     // },
-    {
-      id: 'employment',
-      type: 'buttons',
-      en: {
-        label: `Is ${firstName} currently employed?`,
-        options: [
-          'No',
-          'Yes',
-        ],
-      },
-    },
+    // TODO: WHY IS THIS BREAKING?
+    // {
+    //   id: 'employment',
+    //   type: 'buttons',
+    //   en: {
+    //     label: `Is ${firstName} currently employed?`,
+    //     options: [
+    //       'No',
+    //       'Yes, full-time',
+    //       'Yes, but only part-time',
+    //     ],
+    //   },
+    // },
+    // {
+    //   id: 'workType',
+    //   condition: person.employment === 'Yes',
+    //   type: 'dropdown',
+    //   en: {
+    //     label: `What does ${pronoun} do for work?`,
+    //     options: ['Domestic Worker', 'Care Taker', 'Technician', 'Other'],
+    //   },
+    // },
     {
       id: 'workType',
       condition: person.employment === 'Yes',
-      type: 'dropdown',
-      en: {
-        label: `What does ${pronoun} do for work?`,
-        options: ['Domestic Worker', 'Care Taker', 'Technician', 'Other'],
-      },
-    },
-    {
-      id: 'workTypeOther',
-      condition: person.workType === 'Other',
       type: 'string',
       en: {
-        label: `Please specify what ${pronoun} does for work?`,
+        label: `Please specify what ${firstName} does for work?`,
       },
     },
     {
@@ -248,7 +258,7 @@ const buildPersonQuestions = (personId, people) => {
       condition: person.employment === 'No',
       type: 'buttons',
       en: {
-        label: `Do ${pronoun} have other sources of income?`,
+        label: `Does ${pronoun} have other sources of income?`,
         options: [
           'No',
           'Yes',
@@ -554,7 +564,7 @@ const representativeQuestions = (representativeId, people) => {
     },
     {
       id: 'employmentStart',
-      condition: representative.employment === 'Yes',
+      condition: representative.employment.includes('Yes'),
       type: 'month-year',
       en: {
         label: 'Since when have you been employed at your current place of work?',
@@ -575,7 +585,7 @@ const representativeQuestions = (representativeId, people) => {
     //   },
     // },
     {
-      id: 'workTypeOther',
+      id: 'workType',
       condition: representative.employment === 'Yes',
       type: 'string',
       en: {
