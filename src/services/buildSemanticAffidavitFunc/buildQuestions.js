@@ -1018,12 +1018,12 @@ const propertyQuestions = (propertyId, properties) => {
       en: {
         label: 'How did you find out your lease was cancelled (the landlord wanted you to leave)?',
         options: [
-          'They told you in person',
-          'They sent you a letter',
-          'Their lawyer sent you a letter',
-          'They sent you an email',
-          'Their lawyer sent you a email',
-          'They sent you a text or whatsapp',
+          'Your landlord told you in person',
+          'Your landlord sent you a letter',
+          'Your landlord\'s lawyer sent you a letter',
+          'Your landlord sent you an email',
+          'Your landlord\'s lawyer sent you a email',
+          'Your landlord sent you a text or whatsapp',
           'You received court papers from the Sheriff',
           'Other',
         ],
