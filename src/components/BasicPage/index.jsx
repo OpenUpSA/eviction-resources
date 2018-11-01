@@ -1,4 +1,4 @@
-import React, { Component, Children } from 'react';
+import React, { Component } from 'react';
 import Typography from '@material-ui/core/Typography';
 import PageTransition from 'gatsby-plugin-page-transitions';
 import Swipeable from 'react-swipeable';

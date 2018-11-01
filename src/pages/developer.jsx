@@ -20,10 +20,13 @@ function DeveloperPage() {
     >
       <div>
         <Typography component="p">
-          <strong>IMPORTANT: As part of the preview, this section is only for developer use. Please do not use this section unless instructed by a developer from OpenUp.</strong>
+          <strong>
+            IMPORTANT: As part of the preview, this section is only for developer use.
+            Please do not use this section unless instructed by a developer from OpenUp.
+          </strong>
         </Typography>
         <div style={{ marginTop: '3rem' }}>
-        <AnimateButton onClick={fireEvent} variant="contained" size="large" fullWidth text="Delete all saved content" />
+          <AnimateButton onClick={fireEvent} variant="contained" size="large" fullWidth text="Delete all saved content" />
         </div>
       </div>
     </BasicPage>
