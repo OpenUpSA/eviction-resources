@@ -71,7 +71,7 @@ function Markup({ notification, setNotification }) {
   };
 
   return (
-    <BasicPage 
+    <BasicPage
       modalProps={notification}
       heading="Introduction"
       expanded="Overview"
@@ -85,7 +85,7 @@ function Markup({ notification, setNotification }) {
           Answering the questions will help the <span onClick={() => setNotification(lawyerGlossary)} style={{ textDecoration: 'underline', color: 'blue', cursor: 'pointer' }}>lawyer</span> to quickly understand all the relevant details of your case so that they can advise you as best they can.
         </Typography>
         <Typography component="p" style={{ marginBottom: '2.5rem' }}>
-          Gathering the correct information in advance is important because <span onClick={() => setNotification(consultationGlossary)} style={{ textDecoration: 'underline', color: 'blue', cursor: 'pointer' }}>consultation</span> time with a lawyer can be very expensive. This tool will help you speed up the process, so that you can take action in your case as soon as possible. 
+          Gathering the correct information in advance is important because <span onClick={() => setNotification(consultationGlossary)} style={{ textDecoration: 'underline', color: 'blue', cursor: 'pointer' }}>consultation</span> time with a lawyer can be very expensive. This tool will help you speed up the process, so that you can take action in your case as soon as possible.
         </Typography>
         <Link to="/affidavits" style={{ textDecoration: 'none' }}>
           <AnimateButton variant="contained" color="primary" fullWidth size="large" text="Get Started" />
@@ -95,7 +95,7 @@ function Markup({ notification, setNotification }) {
         </Link>
       </div>
     </BasicPage>
-  )
+  );
 }
 
 

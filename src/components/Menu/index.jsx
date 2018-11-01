@@ -15,36 +15,36 @@ import { addAffidavit as addAffidavitAction } from './../../redux/actions';
 
 class Menu extends Component {
   constructor(...props) {
-    super(...props)
+    super(...props);
     const { expanded } = this.props;
 
     this.state = {
       expanded: expanded || null,
-    }
+    };
 
     this.events = {
       setExpanded: this.setExpanded.bind(this),
-    }
+    };
   }
 
   setExpanded(expanded) {
     if (!expanded || this.state.expanded === expanded) {
-      return this.setState({ expanded: null })
+      return this.setState({ expanded: null });
     }
 
-    return this.setState({ expanded })
+    return this.setState({ expanded });
   }
 
   render() {
     const { expanded } = this.state;
     const { open, onClose, onOpen, selected, addAffidavit } = this.props;
     const { setExpanded } = this.events;
-    return <Markup {...{ addAffidavit, expanded, open, onClose, onOpen, setExpanded, selected }} />
+    return <Markup {...{ addAffidavit, expanded, open, onClose, onOpen, setExpanded, selected }} />;
   }
 }
 
 
-const fireEvent = action => {
+const fireEvent = (action) => {
   const id = action();
   navigateTo(`/edit?id=${id}`);
 }

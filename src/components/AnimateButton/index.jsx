@@ -11,11 +11,11 @@ class AnimateButton extends Component {
 
     this.state = {
       loading: false,
-    }
+    };
 
     this.events = {
       startLoading: this.startLoading.bind(this),
-    }
+    };
   }
 
   startLoading() {
@@ -29,14 +29,14 @@ class AnimateButton extends Component {
     const loading = calcIfLoadingOverride(loadingFromState, forceLoading)
 
     const passedProps = { ...otherProps, loading, startLoading };
-    return <Markup {...passedProps} />
+    return <Markup {...passedProps} />;
   }
 }
 
 
 const loadingAnimation = color => {
-  const inverse = { color: 'white' }
-  return <CircularProgress style={ color === 'primary' ? inverse : {}} size={15} thickness={7} />
+  const inverse = { color: 'white' };
+  return <CircularProgress style={color === 'primary' ? inverse : {}} size={15} thickness={7} />;
 }
 
 
@@ -53,7 +53,7 @@ function Markup({ startLoading, loading, text, ...props}) {
     <Button {...props} onClick={clickEvent}>
       {loading ? loadingAnimation(props.color) : text}
     </Button>
-  )
+  );
 }
 
 

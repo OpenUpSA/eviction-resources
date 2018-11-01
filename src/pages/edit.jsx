@@ -287,13 +287,13 @@ const mapStateToProps = (state, ownProps) => ({
 const mapDispatchToProps = (dispatch, ownProps) => ({
   ...ownProps,
   changePersonAttribute: (id, attribute, value) => {
-    return dispatch(changePersonAttributeAction(id, attribute, value))
+    return dispatch(changePersonAttributeAction(id, attribute, value));
   },
   changePropertyAttribute: (id, attribute, value) => {
-    return dispatch(changePropertyAttributeAction(id, attribute, value))
+    return dispatch(changePropertyAttributeAction(id, attribute, value));
   },
   changeLawyerAttribute: (id, attribute, value) => {
-    return dispatch(changeLawyerAttributeAction(id, attribute, value))
+    return dispatch(changeLawyerAttributeAction(id, attribute, value));
   },
   saveProgress: (id, step) => {
     return dispatch(saveProgressAction(id, step));
