@@ -722,7 +722,7 @@ const affidavitQuestions = (affidavits, affidavitId) => {
       id: 'occupants',
       type: 'occupants',
       en: {
-        label: 'How many other people permanently reside (live) in the place with you?',
+        label: 'How many people, excluding yourself, permanently reside (live) in the place with you?',
         options: createArrayOfNumbers({ start: 0, times: 20 }),
       },
     },
