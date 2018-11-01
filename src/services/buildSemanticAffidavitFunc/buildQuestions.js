@@ -38,7 +38,6 @@ const buildPersonQuestions = (personId, people) => {
   const possesiveName = calcPossesive(firstName);
 
 
-
   const questionsList = [
     {
       id: 'lastName',
@@ -276,7 +275,7 @@ const buildPersonQuestions = (personId, people) => {
             prefix: 'R',
           }),
           'Other',
-        ]
+        ],
       },
     },
     {
@@ -548,7 +547,8 @@ const representativeQuestions = (representativeId, people) => {
         label: 'Are you currently employed?',
         options: [
           'No',
-          'Yes',
+          'Yes, full-time',
+          'Yes, but only part-time',
         ],
       },
     },
@@ -557,26 +557,26 @@ const representativeQuestions = (representativeId, people) => {
       condition: representative.employment === 'Yes',
       type: 'month-year',
       en: {
-        label: 'Since when have you been employed?',
+        label: 'Since when have you been employed at your current place of work?',
       },
     },
-    {
-      id: 'workType',
-      condition: representative.employment === 'Yes',
-      type: 'dropdown',
-      en: {
-        label: 'What do you do for work?',
-        options: [
-          'Domestic Worker',
-          'Care Taker',
-          'Technician',
-          'Other',
-        ],
-      },
-    },
+    // {
+    //   id: 'workType',
+    //   condition: representative.employment === 'Yes',
+    //   type: 'dropdown',
+    //   en: {
+    //     label: 'What do you do for work?',
+    //     options: [
+    //       'Domestic Worker',
+    //       'Care Taker',
+    //       'Technician',
+    //       'Other',
+    //     ],
+    //   },
+    // },
     {
       id: 'workTypeOther',
-      condition: representative.workType === 'Other',
+      condition: representative.employment === 'Yes',
       type: 'string',
       en: {
         label: 'Please specify what you do for work?',
