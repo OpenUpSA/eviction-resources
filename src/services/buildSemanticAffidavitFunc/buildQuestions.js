@@ -38,7 +38,6 @@ const buildPersonQuestions = (personId, people) => {
   const possesiveName = calcPossesive(firstName);
 
 
-
   const questionsList = [
     {
       id: 'lastName',
@@ -85,13 +84,13 @@ const buildPersonQuestions = (personId, people) => {
       type: 'dropdown',
       en: {
         label: `How old is ${firstName}?`,
-        options: createArrayOfNumbers({ start: 18, times: 82 }),
+        options: createArrayOfNumbers({ start: 0, times: 100 }),
       },
     },
     {
       id: 'married',
       type: 'buttons',
-      condition: person.relationToRep !== 'Spouse',
+      condition: person.relationToRep !== 'Husband / Wife',
       en: {
         label: `Is ${firstName} married?`,
         options: [
@@ -188,6 +187,14 @@ const buildPersonQuestions = (personId, people) => {
         ],
       },
     },
+    {
+      id: 'healthProblemsList',
+      condition: person.healthProblems === 'Yes',
+      type: 'string',
+      en: {
+        label: `Can you specify ${pronoun} health problem or disability?`,
+      },
+    },
     // {
     //   id: 'healthProblemsList',
     //   condition: person.healthProblems === 'Yes',
@@ -216,32 +223,34 @@ const buildPersonQuestions = (personId, people) => {
     //     ],
     //   },
     // },
-    {
-      id: 'employment',
-      type: 'buttons',
-      en: {
-        label: `Is ${firstName} currently employed?`,
-        options: [
-          'No',
-          'Yes',
-        ],
-      },
-    },
+    // TODO: WHY IS THIS BREAKING?
+    // {
+    //   id: 'employment',
+    //   type: 'buttons',
+    //   en: {
+    //     label: `Is ${firstName} currently employed?`,
+    //     options: [
+    //       'No',
+    //       'Yes, full-time',
+    //       'Yes, but only part-time',
+    //     ],
+    //   },
+    // },
+    // {
+    //   id: 'workType',
+    //   condition: person.employment === 'Yes',
+    //   type: 'dropdown',
+    //   en: {
+    //     label: `What does ${pronoun} do for work?`,
+    //     options: ['Domestic Worker', 'Care Taker', 'Technician', 'Other'],
+    //   },
+    // },
     {
       id: 'workType',
       condition: person.employment === 'Yes',
-      type: 'dropdown',
-      en: {
-        label: `What does ${pronoun} do for work?`,
-        options: ['Domestic Worker', 'Care Taker', 'Technician', 'Other'],
-      },
-    },
-    {
-      id: 'workTypeOther',
-      condition: person.workType === 'Other',
       type: 'string',
       en: {
-        label: `Please specify what ${pronoun} does for work?`,
+        label: `Please specify what ${firstName} does for work?`,
       },
     },
     {
@@ -249,7 +258,7 @@ const buildPersonQuestions = (personId, people) => {
       condition: person.employment === 'No',
       type: 'buttons',
       en: {
-        label: `Do ${pronoun} have other sources of income?`,
+        label: `Does ${pronoun} have other sources of income?`,
         options: [
           'No',
           'Yes',
@@ -276,7 +285,7 @@ const buildPersonQuestions = (personId, people) => {
             prefix: 'R',
           }),
           'Other',
-        ]
+        ],
       },
     },
     {
@@ -548,35 +557,36 @@ const representativeQuestions = (representativeId, people) => {
         label: 'Are you currently employed?',
         options: [
           'No',
-          'Yes',
+          'Yes, full-time',
+          'Yes, but only part-time',
         ],
       },
     },
     {
       id: 'employmentStart',
-      condition: representative.employment === 'Yes',
+      condition: representative.employment.includes('Yes'),
       type: 'month-year',
       en: {
-        label: 'Since when have you been employed?',
+        label: 'Since when have you been employed at your current place of work?',
       },
     },
+    // {
+    //   id: 'workType',
+    //   condition: representative.employment === 'Yes',
+    //   type: 'dropdown',
+    //   en: {
+    //     label: 'What do you do for work?',
+    //     options: [
+    //       'Domestic Worker',
+    //       'Care Taker',
+    //       'Technician',
+    //       'Other',
+    //     ],
+    //   },
+    // },
     {
       id: 'workType',
       condition: representative.employment === 'Yes',
-      type: 'dropdown',
-      en: {
-        label: 'What do you do for work?',
-        options: [
-          'Domestic Worker',
-          'Care Taker',
-          'Technician',
-          'Other',
-        ],
-      },
-    },
-    {
-      id: 'workTypeOther',
-      condition: representative.workType === 'Other',
       type: 'string',
       en: {
         label: 'Please specify what you do for work?',
@@ -659,6 +669,14 @@ const representativeQuestions = (representativeId, people) => {
         ],
       },
     },
+    {
+      id: 'healthProblemsList',
+      condition: representative.healthProblems === 'Yes',
+      type: 'string',
+      en: {
+        label: 'Can you specify your health problem or disability?',
+      },
+    },
     // {
     //   id: 'healthProblemsList',
     //   condition: representative.healthProblems === 'Yes',
@@ -714,7 +732,7 @@ const affidavitQuestions = (affidavits, affidavitId) => {
       id: 'occupants',
       type: 'occupants',
       en: {
-        label: 'How many other people permanently reside (live) in the place with you?',
+        label: 'How many people, excluding yourself, permanently reside (live) in the place with you?',
         options: createArrayOfNumbers({ start: 0, times: 20 }),
       },
     },
@@ -872,13 +890,14 @@ const propertyQuestions = (propertyId, properties) => {
       condition: property.arrears === 'Yes',
       type: 'dropdown',
       en: {
-        label: 'Why did you stop paying',
+        label: 'Why did you stop paying?',
         options: [
           'Lost my job',
           'Illness',
           'Death of the breadwinner',
           'Accident',
           'Landlord breached the lease agreement',
+          'Other',
         ],
       },
     },
@@ -999,12 +1018,12 @@ const propertyQuestions = (propertyId, properties) => {
       en: {
         label: 'How did you find out your lease was cancelled (the landlord wanted you to leave)?',
         options: [
-          'They told you in person',
-          'They sent you a letter',
-          'Their lawyer sent you a letter',
-          'They sent you an email',
-          'Their lawyer sent you a email',
-          'They sent you a text or whatsapp',
+          'Your landlord told you in person',
+          'Your landlord sent you a letter',
+          'Your landlord\'s lawyer sent you a letter',
+          'Your landlord sent you an email',
+          'Your landlord\'s lawyer sent you a email',
+          'Your landlord sent you a text or whatsapp',
           'You received court papers from the Sheriff',
           'Other',
         ],
@@ -1040,13 +1059,6 @@ const propertyQuestions = (propertyId, properties) => {
           'No',
           'Yes',
         ],
-      },
-    },
-    {
-      id: 'leaseCancelDisputeReason',
-      type: 'string',
-      en: {
-        label: 'What reason did your landlord give for the cancellation of your lease?',
       },
     },
     {
@@ -1128,11 +1140,13 @@ const legalQuestions = (lawyerId, lawyers) => {
         options: [
           'No',
           'Yes',
+          'NA',
         ],
       },
     },
     {
       id: 'speakDate',
+      condition: lawyer.rememberSpeakDate === 'Yes',
       type: 'day-month-year',
       en: {
         label: 'What date did you speak to them?',
