@@ -48,7 +48,7 @@ function DirectionButtons(props) {
         </Button>
 
         <Typography variant="caption" style={textStyle}>
-          {`SWIPE SCREEN (${current}/${total}}`}
+          {`SWIPE SCREEN (${current}/${total})`}
         </Typography>
 
         <Button size="small" variant="outlined" color="primary" onClick={RightClickCb} disabled={current >= total} style={{ paddingLeft: '16px' }}>

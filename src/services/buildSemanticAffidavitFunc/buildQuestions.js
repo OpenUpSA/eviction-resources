@@ -35,8 +35,7 @@ const buildPersonQuestions = (personId, people) => {
   const person = people[personId];
   const pronoun = calcPronoun(person.gender);
   const { firstName } = person;
-  const possesiveName = calcPossesive(firstName);
-
+  const possessiveName = calcPossesive(firstName);
 
   const questionsList = [
     {
@@ -44,14 +43,14 @@ const buildPersonQuestions = (personId, people) => {
       type: 'string',
       en: {
         example: 'Smith',
-        label: `What is ${possesiveName} last name?`,
+        label: `What is ${possessiveName} last name?`,
       },
     },
     {
       id: 'relationToRep',
       type: 'dropdown',
       en: {
-        label: `What is ${possesiveName} relationship to you?`,
+        label: `What is ${possessiveName} relationship to you?`,
         options: [
           'Husband / Wife',
           'Child',
@@ -71,7 +70,7 @@ const buildPersonQuestions = (personId, people) => {
       id: 'gender',
       type: 'buttons',
       en: {
-        label: `What is ${possesiveName} gender?`,
+        label: `What is ${possessiveName} gender?`,
         options: [
           'Male',
           'Female',
@@ -223,19 +222,18 @@ const buildPersonQuestions = (personId, people) => {
     //     ],
     //   },
     // },
-    // TODO: WHY IS THIS BREAKING?
-    // {
-    //   id: 'employment',
-    //   type: 'buttons',
-    //   en: {
-    //     label: `Is ${firstName} currently employed?`,
-    //     options: [
-    //       'No',
-    //       'Yes, full-time',
-    //       'Yes, but only part-time',
-    //     ],
-    //   },
-    // },
+    {
+      id: 'employment',
+      type: 'buttons',
+      en: {
+        label: `Is ${firstName} currently employed?`,
+        options: [
+          'No',
+          'Yes, full-time',
+          'Yes, but only part-time',
+        ],
+      },
+    },
     // {
     //   id: 'workType',
     //   condition: person.employment === 'Yes',
@@ -247,7 +245,7 @@ const buildPersonQuestions = (personId, people) => {
     // },
     {
       id: 'workType',
-      condition: person.employment === 'Yes',
+      condition: person.employment && person.employment.includes('Yes'),
       type: 'string',
       en: {
         label: `Please specify what ${firstName} does for work?`,
@@ -276,7 +274,7 @@ const buildPersonQuestions = (personId, people) => {
       ),
       type: 'dropdown',
       en: {
-        label: `What is ${possesiveName} total income per month?`,
+        label: `What is ${possessiveName} total income per month?`,
         options: [
           ...createArrayOfNumbers({
             start: 500,
@@ -317,7 +315,7 @@ const buildPersonQuestions = (personId, people) => {
       condition: person.school === 'Yes',
       type: 'buttons',
       en: {
-        label: `Is ${possesiveName} school a special needs school?`,
+        label: `Is ${possessiveName} school a special needs school?`,
         options: [
           'No',
           'Yes',
@@ -346,13 +344,30 @@ const buildPersonQuestions = (personId, people) => {
     },
     {
       id: 'socialInstitutions',
-      type: 'buttons',
+      type: 'dropdown-multiple',
       en: {
-        label: `Are there any social institutions in the neighbourhood which ${firstName} uses regularly?`,
+        label: `Does ${firstName} go to or use one or more of the following facilities in your neighbourhood (close to your house)?`,
         options: [
-          'No',
-          'Yes',
+          'School',
+          'Tertiary Education',
+          'Church / Mosque / Synagogue / Other place of worship',
+          'Youth Club',
+          'Sports Club',
+          'Social Club',
+          'Soup Kitchen',
+          'Daycare',
+          'Hospital / Clinic',
+          'Bank',
+          'Other',
         ],
+      },
+    },
+    {
+      id: 'socialInstitutionsOther',
+      condition: person.socialInstitutions && person.socialInstitutions.includes('Other'),
+      type: 'string',
+      en: {
+        label: 'Please provide the name and type of the facility if you selected "Other" on the previous question.',
       },
     },
     // {
@@ -474,7 +489,7 @@ const representativeQuestions = (representativeId, people) => {
       id: 'preferedLanguage',
       type: 'buttons',
       en: {
-        label: 'Do you have a prefered language other than English?',
+        label: 'Do you have a preferred language other than English?',
         options: [
           'No',
           'Yes',
@@ -564,7 +579,7 @@ const representativeQuestions = (representativeId, people) => {
     },
     {
       id: 'employmentStart',
-      condition: representative.employment.includes('Yes'),
+      condition: representative.employment && representative.employment.includes('Yes'),
       type: 'month-year',
       en: {
         label: 'Since when have you been employed at your current place of work?',
@@ -586,7 +601,7 @@ const representativeQuestions = (representativeId, people) => {
     // },
     {
       id: 'workType',
-      condition: representative.employment === 'Yes',
+      condition: representative.employment && representative.employment.includes('Yes'),
       type: 'string',
       en: {
         label: 'Please specify what you do for work?',
@@ -969,31 +984,30 @@ const propertyQuestions = (propertyId, properties) => {
         ],
       },
     },
-    // TODO: multiple add
-    // {
-    //   id: 'landlordProblemsList',
-    //   condition: property.landlordProblems === 'Yes',
-    //   type: 'dropdown-multiple',
-    //   en: {
-    //     label: 'Please specify a problem with your agency/landlord',
-    //     options: [
-    //       'Did not refund deposit',
-    //       'I got an unlawful notice to vacate',
-    //       'Exorbitant increase in rental',
-    //       'Did not accept cancellation of my lease',
-    //       'Failure to provide water, electricity, etc.',
-    //       'Failure to pay rental or municipal services',
-    //       'Failure to do maintenance',
-    //       'Unlawful lockout or eviction',
-    //       'Secretly changing terms of agreement',
-    //       'Unlawful entry onto property',
-    //       'Unlawful seizure of possessions',
-    //       'Failure to furnish receipts for payment',
-    //       'Failure to reduce lease to writing',
-    //       'Other',
-    //     ],
-    //   },
-    // },
+    {
+      id: 'landlordProblemsList',
+      condition: property.landlordProblems === 'Yes',
+      type: 'dropdown-multiple',
+      en: {
+        label: 'Please specify a problem with your agency/landlord',
+        options: [
+          'Did not refund deposit',
+          'I got an unlawful notice to vacate',
+          'Exorbitant increase in rental',
+          'Did not accept cancellation of my lease',
+          'Failure to provide water, electricity, etc.',
+          'Failure to pay rental or municipal services',
+          'Failure to do maintenance',
+          'Unlawful lockout or eviction',
+          'Secretly changing terms of agreement',
+          'Unlawful entry onto property',
+          'Unlawful seizure of possessions',
+          'Failure to furnish receipts for payment',
+          'Failure to reduce lease to writing',
+          'Other',
+        ],
+      },
+    },
     {
       id: 'housingTribunal',
       type: 'buttons',
