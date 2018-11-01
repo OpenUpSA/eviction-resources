@@ -1,4 +1,6 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+
 import Button from '@material-ui/core/Button';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
@@ -58,5 +60,11 @@ function DirectionButtons(props) {
   );
 }
 
+DirectionButtons.propTypes = {
+  leftClickCb: PropTypes.func.isRequired,
+  RightClickCb: PropTypes.func.isRequired,
+  current: PropTypes.number.isRequired,
+  total: PropTypes.number.isRequired,
+};
 
 export default DirectionButtons;
