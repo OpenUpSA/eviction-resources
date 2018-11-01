@@ -890,13 +890,14 @@ const propertyQuestions = (propertyId, properties) => {
       condition: property.arrears === 'Yes',
       type: 'dropdown',
       en: {
-        label: 'Why did you stop paying',
+        label: 'Why did you stop paying?',
         options: [
           'Lost my job',
           'Illness',
           'Death of the breadwinner',
           'Accident',
           'Landlord breached the lease agreement',
+          'Other',
         ],
       },
     },
