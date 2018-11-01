@@ -1062,13 +1062,6 @@ const propertyQuestions = (propertyId, properties) => {
       },
     },
     {
-      id: 'leaseCancelDisputeReason',
-      type: 'string',
-      en: {
-        label: 'What reason did your landlord give for the cancellation of your lease?',
-      },
-    },
-    {
       id: 'sheriffExplainPapers',
       type: 'buttons',
       en: {
@@ -1147,11 +1140,13 @@ const legalQuestions = (lawyerId, lawyers) => {
         options: [
           'No',
           'Yes',
+          'NA',
         ],
       },
     },
     {
       id: 'speakDate',
+      condition: lawyer.rememberSpeakDate === 'Yes',
       type: 'day-month-year',
       en: {
         label: 'What date did you speak to them?',
