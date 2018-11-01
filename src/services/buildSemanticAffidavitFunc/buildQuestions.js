@@ -659,6 +659,14 @@ const representativeQuestions = (representativeId, people) => {
         ],
       },
     },
+    {
+      id: 'healthProblemsList',
+      condition: representative.healthProblems === 'Yes',
+      type: 'string',
+      en: {
+        label: 'Can you specify your health problem or disability?',
+      },
+    },
     // {
     //   id: 'healthProblemsList',
     //   condition: representative.healthProblems === 'Yes',
