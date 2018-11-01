@@ -10,6 +10,7 @@ const rootStyle = {
   bottom: 0,
   left: 0,
   width: '100%',
+  marginBottom: 10,
 };
 
 
@@ -33,21 +34,23 @@ function DirectionButtons(props) {
     leftClickCb,
     RightClickCb,
     current = 1,
-    total = 1
+    total = 1,
   } = props;
 
   return (
     <div style={rootStyle}>
       <div style={innerStyle}>
-        <Button size="small" onClick={leftClickCb} disabled={current < 2}>
+        <Button size="small" variant="outlined" color="primary" onClick={leftClickCb} disabled={current < 2} style={{ paddingRight: '16px' }}>
           <KeyboardArrowLeft />
+          Back
         </Button>
 
         <Typography variant="caption" style={textStyle}>
           {`SWIPE SCREEN (${current}/${total}}`}
         </Typography>
 
-        <Button size="small" onClick={RightClickCb} disabled={current >= total}>
+        <Button size="small" variant="outlined" color="primary" onClick={RightClickCb} disabled={current >= total} style={{ paddingLeft: '16px' }}>
+          Next
           <KeyboardArrowRight />
         </Button>
       </div>

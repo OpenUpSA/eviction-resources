@@ -969,6 +969,7 @@ const propertyQuestions = (propertyId, properties) => {
         ],
       },
     },
+    // TODO: multiple add
     // {
     //   id: 'landlordProblemsList',
     //   condition: property.landlordProblems === 'Yes',
