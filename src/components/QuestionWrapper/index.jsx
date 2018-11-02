@@ -5,6 +5,7 @@ import { pick } from 'lodash';
 import ButtonsList from './components/ButtonsList';
 import FreeInput from './components/FreeInput';
 import Dropdown from './components/Dropdown';
+import DropdownMultiple from './components/DropdownMultiple';
 import Occupants from './components/Occupants';
 import OccupantsList from './components/OccupantsList';
 import DateSelect from './components/DateSelect';
@@ -19,6 +20,7 @@ const calcQuestionType = (props) => {
     case 'string': return <FreeInput {...otherProps} />;
     case 'number': return <FreeInput {...otherProps} type="number" />;
     case 'dropdown': return <Dropdown {...otherProps} />;
+    case 'dropdown-multiple': return <DropdownMultiple {...otherProps} />;
     case 'occupants': return <Occupants {...otherProps} />;
     case 'occupants-list': return <OccupantsList {...otherProps} />;
     case 'month-year': return <DateSelect {...otherProps} month year />;

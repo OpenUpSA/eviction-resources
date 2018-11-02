@@ -7,7 +7,7 @@ import { calcIfLoadingOverride } from './helpers';
 
 class AnimateButton extends Component {
   constructor(...props) {
-    super(...props)
+    super(...props);
 
     this.state = {
       loading: false,
@@ -34,20 +34,25 @@ class AnimateButton extends Component {
 }
 
 
-const loadingAnimation = color => {
+const loadingAnimation = (color) => {
   const inverse = { color: 'white' };
   return <CircularProgress style={color === 'primary' ? inverse : {}} size={15} thickness={7} />;
-}
+};
 
 
-function Markup({ startLoading, loading, text, ...props}) {
-  const clickEvent = event => {
+function Markup({
+  startLoading,
+  loading,
+  text,
+  ...props
+}) {
+  const clickEvent = (event) => {
     startLoading();
 
     if (props.onClick) {
       props.onClick(event);
     }
-  }
+  };
 
   return (
     <Button {...props} onClick={clickEvent}>
