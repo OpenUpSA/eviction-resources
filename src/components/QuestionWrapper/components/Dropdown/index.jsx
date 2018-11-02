@@ -1,6 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-
 import Select from '@material-ui/core/Select';
 import Input from '@material-ui/core/Input';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -35,15 +33,5 @@ function Dropdown(props) {
   );
 }
 
-Dropdown.defaultProps = {
-  options: null,
-};
-
-Dropdown.propTypes = {
-  answer: PropTypes.string.isRequired,
-  changeAction: PropTypes.func.isRequired,
-  options: PropTypes.instanceOf(Array),
-  proceed: PropTypes.func.isRequired,
-};
 
 export default Dropdown;
