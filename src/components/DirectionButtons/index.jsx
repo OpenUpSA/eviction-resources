@@ -13,6 +13,7 @@ const rootStyle = {
   left: 0,
   width: '100%',
   marginBottom: 10,
+  padding: '0px 16px',
 };
 
 
@@ -28,6 +29,7 @@ const textStyle = {
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
+  textAlign: 'center',
 };
 
 
