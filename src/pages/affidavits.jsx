@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import * as emailjs from 'emailjs-com';
 import { connect } from 'react-redux';
 import Link from 'gatsby-link';
 import { pick } from 'lodash';
@@ -14,9 +15,9 @@ import buildSemanticAffidavitFunc from '../services/buildSemanticAffidavitFunc';
 import convertAnswersIntoEmail from '../services/convertAnswersIntoEmail';
 
 
-const convertToInternationalNumber = (number) => {
-  return number.replace(/^0/, '27');
-};
+// const convertToInternationalNumber = (number) => {
+//   return number.replace(/^0/, '27');
+// };
 
 
 class AffidavitsPage extends Component {
@@ -28,15 +29,15 @@ class AffidavitsPage extends Component {
       loading: true,
     };
 
-    this.values = {
-      whatsappInputNode: null,
-    };
+    // this.values = {
+    //   whatsappInputNode: null,
+    // };
 
     this.events = {
       deletePrompt: this.deletePrompt.bind(this),
       sendEmail: this.sendEmail.bind(this),
       createSemanticObject: this.createSemanticObject.bind(this),
-      updateWhatsappNode: this.updateWhatsappNode.bind(this),
+      // updateWhatsappNode: this.updateWhatsappNode.bind(this),
     };
   }
 
@@ -46,9 +47,9 @@ class AffidavitsPage extends Component {
   }
 
 
-  updateWhatsappNode(node) {
-    this.values.whatsappInputNode = node;
-  }
+  // updateWhatsappNode(node) {
+  //   this.values.whatsappInputNode = node;
+  // }
 
   createSemanticObject() {
     const { loading } = this.state;
@@ -77,53 +78,77 @@ class AffidavitsPage extends Component {
   sendEmail(id) {
     const { createSemanticObject } = this.events;
     const { meta, questions } = createSemanticObject()(id);
-    const { completed } = meta;
+    const { completed, name } = meta;
 
-    const sendMessage = (number) => {
-      const emailBody = encodeURIComponent(convertAnswersIntoEmail(questions));
-      const messageUrl = `https://api.whatsapp.com/send?phone=${convertToInternationalNumber(number)}&text=${emailBody}`;
-      window.open(messageUrl, '_blank');
-      return this.setState({ notification: null });
+    const success = {
+      title: 'Affidavit sent',
+      description: 'The affidavit was sent to Ndifuna Ukwazi. Someone will be in contact with you soon.',
+      open: true,
+      close: () => this.setState({ notification: null }),
+      reject: {
+        text: 'Close',
+        click: () => this.setState({ notification: null }),
+      },
     };
 
-    const enterPhoneNo = (number) => {
-      const newAddition = number.charAt(number.length - 1);
-
-      const calcIfValid = () => (
-        number.length <= 10
-        && (
-          number.length < 1
-          || !Number.isNaN(parseInt(newAddition, 10))
-        )
-      );
-
-      return {
-        title: 'Whatsapp Number',
-        description: 'Please provide the Whatsapp number supplied by your lawyer. For example \'0748152311\'',
-        open: true,
-        markup: (
-          <TextField
-            onChange={event => calcIfValid() && this.setState({
-              notification: enterPhoneNo(event.target.value),
-            })}
-            margin="normal"
-            autoFocus
-            fullWidth
-            value={number || ''}
-            type="number"
-          />
-        ),
-        close: () => this.setState({ notification: null }),
-        reject: {
-          text: 'Cancel',
-          click: () => this.setState({ notification: null }),
-        },
-        approve: {
-          text: 'Send as Whatsapp',
-          click: () => sendMessage(number),
-        },
+    const sendAffidavit = () => {
+      const emailBody = convertAnswersIntoEmail(questions).replace(/\n/g, '<br />');
+      const templateParams = {
+        name: name,
+        email: emailBody,
       };
+
+      // TODO: replace userID
+      emailjs.send('mailgun', 'affidavit_generator', templateParams, 'user_qJ0zuc2mjEVewkzJpCnW7')
+        .then(() => { this.setState({ notification: success }); });
     };
+
+    // const sendMessage = (number) => {
+    //   const emailBody = encodeURIComponent(convertAnswersIntoEmail(questions));
+    //   const messageUrl = `https://api.whatsapp.com/send?phone=${convertToInternationalNumber(number)}&text=${emailBody}`;
+    //   window.open(messageUrl, '_blank');
+    //   return this.setState({ notification: null });
+    // };
+    //
+    // TODO: Change modal asking for phone number to accommodate entering email address of lawyer?
+    // const enterPhoneNo = (number) => {
+    //   const newAddition = number.charAt(number.length - 1);
+    //
+    //   const calcIfValid = () => (
+    //     number.length <= 10
+    //     && (
+    //       number.length < 1
+    //       || !Number.isNaN(parseInt(newAddition, 10))
+    //     )
+    //   );
+    //
+    //   return {
+    //     title: 'Whatsapp Number',
+    //     description: 'Please provide the Whatsapp number supplied by your lawyer. For example \'0748152311\'',
+    //     open: true,
+    //     markup: (
+    //       <TextField
+    //         onChange={event => calcIfValid() && this.setState({
+    //           notification: enterPhoneNo(event.target.value),
+    //         })}
+    //         margin="normal"
+    //         autoFocus
+    //         fullWidth
+    //         value={number || ''}
+    //         type="number"
+    //       />
+    //     ),
+    //     close: () => this.setState({ notification: null }),
+    //     reject: {
+    //       text: 'Cancel',
+    //       click: () => this.setState({ notification: null }),
+    //     },
+    //     approve: {
+    //       text: 'Send as Email',
+    //       click: () => sendMessage(),
+    //     },
+    //   };
+    // };
 
     const incomplete = {
       title: 'Missing content',
@@ -136,12 +161,12 @@ class AffidavitsPage extends Component {
       },
       approve: {
         text: 'Continue',
-        click: () => this.setState({ notification: enterPhoneNo('') }),
+        click: () => sendAffidavit(),
       },
     };
 
     if (completed === 100) {
-      return this.setState({ notification: enterPhoneNo('') });
+      return this.setState({ notification: sendAffidavit() });
     }
 
     return this.setState({ notification: incomplete });
@@ -159,7 +184,7 @@ class AffidavitsPage extends Component {
     const notification = {
       open: true,
       title: 'Confirm deletion',
-      description: 'Note that once an affidavit is delete it can not be recovered again.', 
+      description: 'Note that once an affidavit is delete it can not be recovered again.',
       reject: {
         text: 'Cancel',
         click: () => this.setState({ notification: null }),

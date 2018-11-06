@@ -63,8 +63,8 @@ const buildSemanticAffidavitFunc = props => (id) => {
   const answeredQuestions = Object.keys(normalisedQuestions)
     .filter(key => !!normalisedQuestions[key].answer);
 
-  const completed = Math.floor(answeredQuestions.length / validQuestions.length * 100);
-
+  // TODO: Is there a better way to accurately compute completion?
+  const completed = Math.floor((answeredQuestions.length + 1) / validQuestions.length * 100);
   const { firstName } = people[affidavits[id].representative];
   const { lastName } = people[affidavits[id].representative];
   const hasName = firstName && lastName;

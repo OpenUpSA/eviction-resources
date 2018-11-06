@@ -12,7 +12,7 @@ function Send({ sendMessage }) {
         onClick={() => sendMessage()}
         fullWidth
       >
-        Send as Whatsapp
+        Send as Email
       </Button>
     </form>
   );
