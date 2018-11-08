@@ -64,7 +64,6 @@ const buildSemanticAffidavitFunc = props => (id) => {
     .filter(key => !!normalisedQuestions[key].answer);
 
   const completed = Math.floor(answeredQuestions.length / validQuestions.length * 100);
-
   const { firstName } = people[affidavits[id].representative];
   const { lastName } = people[affidavits[id].representative];
   const hasName = firstName && lastName;

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { pick, mapValues } from 'lodash';
+import * as emailjs from 'emailjs-com';
 import { connect } from 'react-redux';
 import Typography from '@material-ui/core/Typography';
 import LinearProgress from '@material-ui/core/LinearProgress';
@@ -21,9 +22,9 @@ import QuestionWrapper from '../components/QuestionWrapper';
 import DirectionButtons from '../components/DirectionButtons';
 
 
-const convertToInternationalNumber = (number) => {
-  return number.replace(/^0/, '27');
-};
+// const convertToInternationalNumber = (number) => {
+//   return number.replace(/^0/, '27');
+// };
 
 
 class EditPage extends Component {
@@ -86,57 +87,85 @@ class EditPage extends Component {
     return null;
   }
 
-
   sendEmail(id) {
     const { createSemanticAffidavit } = this.events;
     const { questions, meta } = createSemanticAffidavit()(id);
-    const { completed } = meta;
+    const { completed, name } = meta;
 
-    const sendMessage = (number) => {
-      const emailBody = encodeURIComponent(convertAnswersIntoEmail(questions));
-      const messageUrl = `https://api.whatsapp.com/send?phone=${convertToInternationalNumber(number)}&text=${emailBody}`;
-      window.open(messageUrl, '_blank');
-      return this.setState({ notification: null });
+    const success = {
+      title: 'Affidavit sent',
+      description: 'The affidavit was sent to Ndifuna Ukwazi. Someone will be in contact with you soon.',
+      open: true,
+      close: () => this.setState({ notification: null }),
+      reject: {
+        text: 'Close',
+        click: () => setTimeout(() => {
+          this.setState({ notification: null });
+          window.location = '/affidavits';
+        }, 500),
+      },
     };
 
-    const enterPhoneNo = (number) => {
-      const newAddition = number.charAt(number.length - 1);
-
-      const calcIfValid = () => (
-        number.length <= 10
-        && (
-          number.length < 1
-          || !Number.isNaN(parseInt(newAddition, 10))
-        )
-      );
-
-      return {
-        title: 'Whatsapp Number',
-        description: 'Please provide the Whatsapp number supplied by your lawyer. For example \'0748152311\'',
-        open: true,
-        markup: (
-          <TextField
-            onChange={event => calcIfValid() && this.setState({
-              notification: enterPhoneNo(event.target.value),
-            })}
-            margin="normal"
-            autoFocus
-            fullWidth
-            value={number || ''}
-            type="number"
-          />
-        ),
-        close: () => this.setState({ notification: null }),
-        reject: {
-          text: 'Cancel',
-          click: () => this.setState({ notification: null }),
-        },
-        approve: {
-          text: 'Send as Whatsapp',
-          click: () => sendMessage(number),
-        },
+    const sendAffidavit = () => {
+      const emailBody = convertAnswersIntoEmail(questions).replace(/\n/g, '<br />');
+      const templateParams = {
+        name: name,
+        email: emailBody,
       };
+
+      // TODO: replace userID
+      emailjs.send('mailgun', 'affidavit_generator', templateParams, 'user_qJ0zuc2mjEVewkzJpCnW7')
+        .then(() => {
+          this.setState({ notification: success });
+        });
     };
+
+    // const sendMessage = (number) => {
+    //   const emailBody = encodeURIComponent(convertAnswersIntoEmail(questions));
+    //   const messageUrl = `https://api.whatsapp.com/send?phone=${convertToInternationalNumber(number)}&text=${emailBody}`;
+    //   window.open(messageUrl, '_blank');
+    //   return this.setState({ notification: null });
+    // };
+
+    // TODO: Change modal asking for phone number to accommodate entering email address of lawyer?
+    // const enterPhoneNo = (number) => {
+    //   const newAddition = number.charAt(number.length - 1);
+    //
+    //   const calcIfValid = () => (
+    //     number.length <= 10
+    //     && (
+    //       number.length < 1
+    //       || !Number.isNaN(parseInt(newAddition, 10))
+    //     )
+    //   );
+    //
+    //   return {
+    //     title: 'Whatsapp Number',
+    //     description: 'Please provide the Whatsapp number supplied by your lawyer. For example \'0748152311\'',
+    //     open: true,
+    //     markup: (
+    //       <TextField
+    //         onChange={event => calcIfValid() && this.setState({
+    //           notification: enterPhoneNo(event.target.value),
+    //         })}
+    //         margin="normal"
+    //         autoFocus
+    //         fullWidth
+    //         value={number || ''}
+    //         type="number"
+    //       />
+    //     ),
+    //     close: () => this.setState({ notification: null }),
+    //     reject: {
+    //       text: 'Cancel',
+    //       click: () => this.setState({ notification: null }),
+    //     },
+    //     approve: {
+    //       text: 'Send as Email',
+    //       click: () => sendAffidavit(),
+    //     },
+    //   };
+    // };
 
     const incomplete = {
       title: 'Missing content',
@@ -149,17 +178,16 @@ class EditPage extends Component {
       },
       approve: {
         text: 'Continue',
-        click: () => this.setState({ notification: enterPhoneNo('') }),
+        click: () => sendAffidavit(),
       },
     };
 
     if (completed === 100) {
-      return this.setState({ notification: enterPhoneNo('') });
+      return this.setState({ notification: sendAffidavit() });
     }
 
     return this.setState({ notification: incomplete });
   }
-
 
   changeStep(value) {
     const { saveProgress, currentProgressObject } = this.props;

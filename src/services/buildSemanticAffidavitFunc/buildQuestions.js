@@ -89,7 +89,7 @@ const buildPersonQuestions = (personId, people) => {
     {
       id: 'married',
       type: 'buttons',
-      condition: person.relationToRep !== 'Husband / Wife',
+      condition: person.relationToRep !== 'Husband / Wife' && person.age > 18,
       en: {
         label: `Is ${firstName} married?`,
         options: [
@@ -113,6 +113,7 @@ const buildPersonQuestions = (personId, people) => {
     {
       id: 'children',
       type: 'buttons',
+      condition: person.age > 16,
       en: {
         label: `Does ${firstName} have children?`,
         options: [
@@ -191,7 +192,7 @@ const buildPersonQuestions = (personId, people) => {
       condition: person.healthProblems === 'Yes',
       type: 'string',
       en: {
-        label: `Can you specify ${pronoun} health problem or disability?`,
+        label: `Can you specify the health problem or disability?`,
       },
     },
     // {
@@ -225,6 +226,7 @@ const buildPersonQuestions = (personId, people) => {
     {
       id: 'employment',
       type: 'buttons',
+      condition: person.age > 16,
       en: {
         label: `Is ${firstName} currently employed?`,
         options: [
@@ -245,7 +247,7 @@ const buildPersonQuestions = (personId, people) => {
     // },
     {
       id: 'workType',
-      condition: person.employment && person.employment.includes('Yes'),
+      condition: (person.age > 16 && (person.employment && person.employment.includes('Yes'))),
       type: 'string',
       en: {
         label: `Please specify what ${firstName} does for work?`,
@@ -256,7 +258,7 @@ const buildPersonQuestions = (personId, people) => {
       condition: person.employment === 'No',
       type: 'buttons',
       en: {
-        label: `Does ${pronoun} have other sources of income?`,
+        label: `Does ${firstName} have other sources of income?`,
         options: [
           'No',
           'Yes',
@@ -1255,4 +1257,3 @@ function buildQuestions(params) {
 
 
 export default buildQuestions;
-
