@@ -98,8 +98,7 @@ class AffidavitsPage extends Component {
         email: emailBody,
       };
 
-      // TODO: replace userID
-      emailjs.send('mailgun', 'affidavit_generator', templateParams, 'user_qJ0zuc2mjEVewkzJpCnW7')
+      emailjs.send('mailgun', process.env.EMAILJS_TEMPLATE, templateParams, process.env.EMAILJS_USER_ID)
         .then(() => { this.setState({ notification: success }); });
     };
 
