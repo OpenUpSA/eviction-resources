@@ -7,6 +7,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import CloseIcon from '@material-ui/icons/Close';
 import MenuIcon from '@material-ui/icons/Menu';
 
 
@@ -26,8 +27,18 @@ const buildBackButton = (back) => {
     </IconButton>
   );
 
+  const closeButton = (
+    <IconButton color="inherit" aria-label="Menu">
+      <CloseIcon />
+    </IconButton>
+  );
+
   if (typeof back === 'function') {
     return <div onClick={back}>{button}</div>;
+  }
+
+  if (back === '/affidavits') {
+    return <div onClick={back}>{closeButton}</div>;
   }
 
   return <Link to={back} style={{ color: 'white' }}>{button}</Link>;
@@ -45,7 +56,7 @@ const titleStyle = {
 
 /**
  * Presentational markup for component. If value function is passed to {@link props.back}, then the
- * function is exectud when back button is pressed, otherwhise the browser navigates to the string
+ * function is executed when back button is pressed, otherwise the browser navigates to the string
  * value passed to {@link props.back}. If nothing is passed to {@link props.back}, then there will
  * not be a back button in the header.
  *
