@@ -5,7 +5,6 @@ import { connect } from 'react-redux';
 import Typography from '@material-ui/core/Typography';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Link from 'gatsby-link';
-import TextField from '@material-ui/core/TextField';
 
 import { changePersonAttribute as changePersonAttributeAction } from '../redux/modules/people';
 import { changePropertyAttribute as changePropertyAttributeAction } from '../redux/modules/properties';
