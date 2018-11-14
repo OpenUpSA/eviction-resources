@@ -41,7 +41,6 @@ class Header extends Component {
 
   render() {
     const {
-      modalProps,
       title,
       back,
       setMenu,
@@ -55,23 +54,32 @@ class Header extends Component {
       letterSpacing: '0.15px',
     };
 
-    const open = {
-      title: 'Save and close current affidavit',
-      description: 'You can save your progress and return to complete it at a later stage',
-      open: true,
-      close: () => this.setState({ notification: null }),
-      reject: {
-        text: 'Cancel',
-        click: () => this.setState({ notification: null }),
-      },
-      approve: {
-        text: 'Save',
-        click: () => setTimeout(() => {
-          this.setState({ notification: null });
-          window.location = '/affidavits';
-        }, 500),
-      },
-    };
+    // TODO: I need to figure out why the modal does not open
+
+    // const open = {
+    //   title: 'Save and close current affidavit',
+    //   description: 'You can save your progress and return to complete it at a later stage',
+    //   open: true,
+    //   close: () => this.setState({ notification: null }),
+    //   reject: {
+    //     text: 'Cancel',
+    //     click: () => this.setState({ notification: null }),
+    //   },
+    //   approve: {
+    //     text: 'Save',
+    //     click: () => setTimeout(() => {
+    //       this.setState({ notification: null });
+    //       window.location = '/affidavits';
+    //     }, 500),
+    //   },
+    // };
+
+    const setOpen = () => {
+      setTimeout(() => {
+        alert('Your progress will be saved, you can return and complete it later');
+        window.location = '/affidavits';
+      }, 500);
+    }
 
     const buildBackButton = () => {
       if (!back) {
@@ -95,19 +103,21 @@ class Header extends Component {
       }
 
       if (back === '/affidavits') {
-        return <div onClick={() => this.setState({ notification: open })}>{closeButton}</div>;
-        // return <div onClick={() => setOpen()}>{closeButton}</div>;
+        // return <div onClick={() => this.setState({ notification: open })}>{closeButton}</div>;
+        return <div onClick={() => setOpen()}>{closeButton}</div>;
         // return <Link to={back} style={{ color: 'white' }}>{closeButton}</Link>;
       }
 
       return <Link to={back} style={{ color: 'white' }}>{button}</Link>;
     };
 
+    const notification = this.state;
+
     return (
       <AppBar position="static">
         <Helmet title={title || 'Affidavit Generator'} />
         <Toolbar>
-          <Modal {...modalProps} />
+          <Modal modalProps={notification} />
           {buildBackButton(back)}
           <Typography variant="title" color="inherit" style={titleStyle}>
             {title}
