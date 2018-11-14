@@ -17,65 +17,6 @@ import Modal from '../Modal';
  * @param props.back - The value used to determine what to render.
  */
 
-class Header extends Component {
-  constructor(...props) {
-    super(...props);
-
-    this.state = {
-      notification: null,
-    };
-
-    this.events = {
-      setOpen: this.setOpen.bind(this),
-    };
-  }
-
-  setOpen(value) {
-    const open = {
-      title: 'Save and close current affidavit',
-      description: 'You can save your progress and return to complete it at a later stage',
-      open: true,
-      close: () => this.setState({ notification: null }),
-      reject: {
-        text: 'Cancel',
-        click: () => this.setState({ notification: null }),
-      },
-      approve: {
-        text: 'Save',
-        click: () => back,
-      },
-    };
-
-    if (value === true) {
-      return this.setState({ notification: open });
-    }
-    console.log(value)
-    return this.setState({ notification: null });
-  }
-
-  render() {
-    const { setOpen } = this.events;
-    const {
-      modalProps,
-      title,
-      back,
-      setMenu,
-    } = this.props;
-
-    return (
-      <BuildHeader
-        {...{
-          title,
-          back,
-          setMenu,
-          setOpen,
-          modalProps,
-        }}
-      />
-    );
-  }
-}
-
 /**
  * Presentational markup for component. If value function is passed to {@link props.back}, then the
  * function is executed when back button is pressed, otherwise the browser navigates to the string
@@ -88,67 +29,96 @@ class Header extends Component {
  * sets the current browser page title to the value passed. If no value is passed will just default
  * to 'Affidavit Generator'.
  */
-function BuildHeader(props) {
-  const {
-    modalProps,
-    title,
-    back,
-    setOpen,
-    setMenu,
-  } = props;
 
-  const titleStyle = {
-    width: '100%',
-    textTransform: 'uppercase',
-    fontSize: '0.75rem',
-    textAlign: 'center',
-    letterSpacing: '0.15px',
-  };
+class Header extends Component {
+  constructor(...props) {
+    super(...props);
 
-  const buildBackButton = () => {
-    if (!back) {
-      return null;
-    }
+    this.state = {
+      notification: null,
+    };
+  }
 
-    const button = (
-      <IconButton color="inherit" aria-label="Menu">
-        <ArrowBackIcon />
-      </IconButton>
-    );
+  render() {
+    const {
+      modalProps,
+      title,
+      back,
+      setMenu,
+    } = this.props;
 
-    const closeButton = (
-      <IconButton color="inherit" aria-label="Menu">
-        <CloseIcon />
-      </IconButton>
-    );
+    const titleStyle = {
+      width: '100%',
+      textTransform: 'uppercase',
+      fontSize: '0.75rem',
+      textAlign: 'center',
+      letterSpacing: '0.15px',
+    };
 
-    if (typeof back === 'function') {
-      return <div onClick={back}>{button}</div>;
-    }
+    const open = {
+      title: 'Save and close current affidavit',
+      description: 'You can save your progress and return to complete it at a later stage',
+      open: true,
+      close: () => this.setState({ notification: null }),
+      reject: {
+        text: 'Cancel',
+        click: () => this.setState({ notification: null }),
+      },
+      approve: {
+        text: 'Save',
+        click: () => setTimeout(() => {
+          this.setState({ notification: null });
+          window.location = '/affidavits';
+        }, 500),
+      },
+    };
 
-    if (back === '/affidavits') {
-      return <Link to={back} style={{ color: 'white' }}>{closeButton}</Link>;
-    }
+    const buildBackButton = () => {
+      if (!back) {
+        return null;
+      }
 
-    return <Link to={back} style={{ color: 'white' }}>{button}</Link>;
-  };
-
-  return (
-    <AppBar position="static">
-      <Helmet title={title || 'Affidavit Generator'} />
-      <Toolbar>
-        <Modal {...modalProps} />
-        {buildBackButton(back)}
-        <Typography variant="title" color="inherit" style={titleStyle}>
-          {title}
-        </Typography>
-        <IconButton color="inherit" aria-label="Menu" onClick={setMenu}>
-          <MenuIcon />
+      const button = (
+        <IconButton color="inherit" aria-label="Menu">
+          <ArrowBackIcon />
         </IconButton>
-      </Toolbar>
-    </AppBar>
-  );
-}
+      );
 
+      const closeButton = (
+        <IconButton color="inherit" aria-label="Menu">
+          <CloseIcon />
+        </IconButton>
+      );
+
+      if (typeof back === 'function') {
+        return <div onClick={back}>{button}</div>;
+      }
+
+      if (back === '/affidavits') {
+        return <div onClick={() => this.setState({ notification: open })}>{closeButton}</div>;
+        // return <div onClick={() => setOpen()}>{closeButton}</div>;
+        // return <Link to={back} style={{ color: 'white' }}>{closeButton}</Link>;
+      }
+
+      return <Link to={back} style={{ color: 'white' }}>{button}</Link>;
+    };
+
+    return (
+      <AppBar position="static">
+        <Helmet title={title || 'Affidavit Generator'} />
+        <Toolbar>
+          <Modal {...modalProps} />
+          {buildBackButton(back)}
+          <Typography variant="title" color="inherit" style={titleStyle}>
+            {title}
+          </Typography>
+          <IconButton color="inherit" aria-label="Menu" onClick={setMenu}>
+            <MenuIcon />
+          </IconButton>
+        </Toolbar>
+      </AppBar>
+    );
+  }
+}
 
 export default Header;
