@@ -105,15 +105,6 @@ function BuildHeader(props) {
     letterSpacing: '0.15px',
   };
 
-  // const setOpen = () => {
-  //   this.setState({ open: true });
-  //   console.log(this.state.open);
-  // };
-
-  // const openModal() {
-  //
-  // };
-
   const buildBackButton = () => {
     if (!back) {
       return null;
@@ -136,8 +127,7 @@ function BuildHeader(props) {
     }
 
     if (back === '/affidavits') {
-
-      return <div onClick={() => setOpen(true)}>{closeButton}</div>;
+      return <Link to={back} style={{ color: 'white' }}>{closeButton}</Link>;
     }
 
     return <Link to={back} style={{ color: 'white' }}>{button}</Link>;
