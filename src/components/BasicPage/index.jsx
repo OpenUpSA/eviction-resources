@@ -146,7 +146,14 @@ function Markup(props) {
         onClose={() => setMenu(false)}
         onOpen={() => setMenu(true)}
       />
-      <Header {...{ title, back, setMenu, modalProps }} />
+      <Header
+        {...{
+          title,
+          back,
+          setMenu,
+          modalProps,
+        }}
+      />
       <main style={mainStyle}>
         {progress && buildProgressMarkup(progress)}
         <PageTransition>

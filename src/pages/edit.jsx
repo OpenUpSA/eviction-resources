@@ -113,7 +113,7 @@ class EditPage extends Component {
       };
 
       // TODO: replace userID
-      emailjs.send('mailgun', 'affidavit_generator', templateParams, 'user_qJ0zuc2mjEVewkzJpCnW7')
+      emailjs.send('mailgun', 'affidavit_generator', templateParams, 'user_ieMO6zfHEVcTfADiZxlIk')
         .then(() => {
           this.setState({ notification: success });
         });
