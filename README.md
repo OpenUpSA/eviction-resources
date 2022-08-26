@@ -19,6 +19,8 @@ This repository contains all user-facing digital resources aimed at those facing
 
 ## Deployment 
 
+Using Netlify.
+
 1. Assets are deployed to Github Pages directly from local development instead of as part of a CI pipeline from Github itself.
 2. Run `npm run deploy` to deploy all files in `public` folder automatically to `gh-pages` branch on repository.
 3. [Husky](https://www.npmjs.com/package/husky) automatically executes [ESLint](https://eslint.org/) and [Stylelint](https://stylelint.io/) validation (via `npm test`) before assets are deployed to Github pages. <sup>2</sup>
