@@ -6,7 +6,7 @@
     "@material-ui/icons": "^3.0.1",
     "dotenv": "^6.1.0",
     "emailjs-com": "^2.2.4",
-    "gatsby": "^1.9.278",
+    "gatsby": "^5.3.3",
     "gatsby-link": "^1.6.46",
     "gatsby-plugin-react-helmet": "^2.0.11",
     "jss": "^9.8.7",
